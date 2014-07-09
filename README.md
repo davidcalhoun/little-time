@@ -15,3 +15,9 @@ littleTime(new Date(), 'dd-mm-yyyy hh:MM:ssTT')                    //  "08-07-20
 //  UTC time
 littleTime(new Date(), 'dd-mm-yyyy hh:MM:ssTT', true)              //  "08-07-2014 18:25:59PM"
 ```
+
+
+============
+TODO
+
+* time zones

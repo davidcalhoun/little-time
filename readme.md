@@ -4,7 +4,7 @@ Little time formatter, for when you don't have time for the whole kitchen sink
 
 
 ===========
-714 byte library (gzipped and minified) that lets you do this:
+792 byte library (gzipped and minified) that lets you do this:
 
 ```
 littleTime(1404843535580, 'ddd mmm ddS yyyy HH:MM:ss')             //  "Tue Jul 08th 2014 11:18:55"

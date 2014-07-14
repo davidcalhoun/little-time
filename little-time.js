@@ -1,7 +1,24 @@
-var littleTime = function(date, format, isUTC) {
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['require'], factory);
+    } else if (typeof exports === 'object') {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like environments that support module.exports,
+        // like Node.
+        module.exports = factory();
+    } else {
+        // Browser globals (root is window)
+        root.littleTime = factory();
+    }
+}(this, function() {
+
+return function(date, format, isUTC) {
+	'use strict';
+
 	var date = new Date(date) || new Date();
 
-	function replacer(match, p1, offset, string){
+	function replacer(match){
 		return formatPiece(date, match);
 	}
 
@@ -77,6 +94,6 @@ var littleTime = function(date, format, isUTC) {
 	}
 
 	return format.replace(/(l+|L+|ss+|s+|MM+|M+|HH+|H+|hh+|h+|TT+|T+|tt+|t+|Z+|o+|S+|dddd+|ddd+|dd+|d+|mmmm+|mmm+|mm+|m+|yyyy+|yy+)/g, replacer);
-}
+};
 
-
+}));

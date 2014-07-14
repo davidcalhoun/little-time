@@ -1,0 +1,38 @@
+
+{
+    "name": "little-time",
+    "homepage": "https://github.com/davidcalhoun/little-time",
+    "version": "0.0.1",
+    "main": "little-time.js",
+    "description": "Tiny timestamp formatter (e.g. ddd mmm ddS yyyy HH:MM:ss)",
+    "keywords": [
+        "time",
+        "timestamp",
+        "datetime",
+        "datestamp",
+        "time formatter",
+        "small"
+    ],
+    "author": "David Calhoun (https://github.com/davidcalhoun)",
+    "contributors": [],
+    "bugs": {
+        "url": "https://github.com/davidcalhoun/little-time/issues"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:davidcalhoun/little-time.git"
+    },
+    "dependencies": {
+
+    },
+    "devDependencies": {
+        "mocha": "*"
+    },
+    "scripts": {
+        "test": "./node_modules/mocha/bin/mocha test"
+    },
+    "engines": {
+        "node": ">=0.10.25"
+    }
+}

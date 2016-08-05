@@ -93,7 +93,72 @@ return function(date, format, isUTC) {
 		return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 	}
 
-	return format.replace(/(l+|L+|ss+|s+|MM+|M+|HH+|H+|hh+|h+|TT+|T+|tt+|t+|Z+|o+|S+|dddd+|ddd+|dd+|d+|mmmm+|mmm+|mm+|m+|yyyy+|yy+)/g, replacer);
+	var time;
+	if (typeof format != 'undefined') {
+		time = format.replace(/(l+|L+|ss+|s+|MM+|M+|HH+|H+|hh+|h+|TT+|T+|tt+|t+|Z+|o+|S+|dddd+|ddd+|dd+|d+|mmmm+|mmm+|mm+|m+|yyyy+|yy+)/g, replacer);
+	} else {
+		time = date;
+	}
+
+	/**
+	 * @param timeB Unix timestamp in milliseconds.
+	 * @example littleTime(1404843535580).from(1470367465850);
+	 */
+	context.from = function(timeB) {
+		var times = {
+			minute: 60000,
+			twoMinutes: 120000,
+			hour: 3600000,
+			twoHours: 7200000,
+			day: 86400000,
+			twoDays: 172800000,
+			month: 2678400000,
+			twoMonths: 5356800000,
+			year: 31536000000,
+			twoYears: 63072000000
+		};
+
+		var diff = timeB - time;
+
+		// past times fallthrough
+		if (diff < times.minute) {
+			return 'a few seconds ago';
+		} else if (diff < times.twoMinutes) {
+			return 'a minute ago';
+		} else if (diff < times.hour) {
+			return Math.floor(diff / times.minute) + ' minutes ago';
+		} else if (diff < times.twoHours) {
+			return 'an hour ago';
+		} else if (diff < times.day) {
+			return Math.floor(diff / times.hour) + ' hours ago';
+		} else if (diff < times.twoDays) {
+			return 'a day ago';
+		} else if (diff < times.month) {
+			return Math.floor(diff / times.day) + ' days ago';
+		} else if (diff < times.twoMonths) {
+			return 'a month ago';
+		} else if (diff < times.year) {
+			return Math.floor(diff / times.month) + ' months ago';
+		} else if (diff < times.twoYears) {
+			return 'a year ago';
+		} else {
+			return Math.floor(diff / times.year) + ' years ago';
+		}
+
+		// todo: future times
+	};
+
+	// e.g. littleTime(1404843535580).fromNow();
+	context.fromNow = function() {
+		return context.from(Date.now());
+	}
+
+	// for simple API usage without chaining (e.g. littleTime())
+	context.toString = function() {
+		return time;
+	};
+
+	return context;
 };
 
 }));

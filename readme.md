@@ -28,3 +28,7 @@ littleTime(new Date(), 'dd-mm-yyyy hh:MM:ssTT', true)              //  "08-07-20
 littleTime(1404843535580).fromNow();            // "2 years ago"
 littleTime(1470338048328).from(1470368048328);  // "8 hours ago"
 ```
+
+## Changelog
+* 0.2.0 added fromNow() and from()
+* 0.1.0 Initial version, with only formatting (with UTC support)

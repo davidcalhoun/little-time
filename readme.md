@@ -10,7 +10,7 @@ Install
 
 
 ===========
-Very small library that lets you do a few things like you can in moment.js, but much smaller (only 1kb gzipped).
+Very small library that lets you do a few things like you can in moment.js, but in a much smaller package (only 1.5kb gzipped).
 
 ## Format times
 Time formatters are the same used by [moment.js](http://momentjs.com/docs/#/displaying/format/).

@@ -29,15 +29,15 @@ describe('little-time', function(){
     });
 
     it('processes timestamps', function(){
-        var result         = littleTime(1404843535580, 'ddd mmm ddS yyyy HH:MM:ss');
-        var expectedResult = 'Tue Jul 08th 2014 11:18:55';
+        var result         = littleTime(1404843535580).format('ddd MMM Do YYYY HH:mm:ss');
+        var expectedResult = 'Tue Jul 8th 2014 11:18:55';
         assert.equal(result, expectedResult);
         return;
     });
 
     it('processes JS Date-friendly inputs', function(){
-        var result         = littleTime('Jul 07 2014 20:10:23', 'ddd mmm ddS yyyy hh:MM:sstt');
-        var expectedResult = 'Mon Jul 07th 2014 08:10:23pm';
+        var result         = littleTime('Jul 07 2014 20:10:23').format('ddd MMM Do YYYY hh:mm:ssa');
+        var expectedResult = 'Mon Jul 7th 2014 08:10:23pm';
         assert.equal(result, expectedResult);
         return;
     });

@@ -15,7 +15,7 @@
 
 var context = this;
 
-describe('little-time ', function(){
+describe('little-time', function(){
     var littleTime;
     before(function(done){
         littleTime = require('../little-time.js');

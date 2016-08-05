@@ -24,10 +24,12 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "mocha": "*"
+    "mocha": "*",
+    "uglify-js": "^2.7.0"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha test"
+    "test": "./node_modules/mocha/bin/mocha test",
+    "minify": "./node_modules/uglify-js/bin/uglifyjs -nmf -o test.js little-time-min.js"
   },
   "engines": {
     "node": ">=0.10.25"

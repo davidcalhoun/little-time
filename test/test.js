@@ -29,6 +29,8 @@ describe('little-time', function(){
 
     describe('format', function() {
         var defaultTime = 'February 6, 2001 13:03:29.324';
+        var defaultTimeObj = new Date(defaultTime)
+        var utcDefaultTime = defaultTimeObj.getTime() - defaultTimeObj.getTimezoneOffset() * 60 * 1000;
 
         it('processes timestamps', function(){
             var result         = littleTime('Jul 8 2014 11:18:55').format('ddd MMM Do YYYY HH:mm:ss');
@@ -230,11 +232,11 @@ describe('little-time', function(){
 
         describe('unix timestamp', function() {
             it('X', function() {
-                assert.equal(littleTime.utc(defaultTime).format('X'), '981493409');
+                assert.equal(littleTime.utc(utcDefaultTime).format('X'), '981464609');
             });
 
             it('x', function() {
-                assert.equal(littleTime.utc(defaultTime).format('x'), '981493409324');
+                assert.equal(littleTime.utc(utcDefaultTime).format('x'), '981464609324');
             });
         });
     });

@@ -28,6 +28,9 @@ var times = {
 	twoYears: 63072000000
 };
 
+var months = [null, 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
 
 var getAnteMeridiem = function(date, isUTC) {
 	var hours = (isUTC) ? date.getUTCHours() : date.getHours();
@@ -36,6 +39,11 @@ var getAnteMeridiem = function(date, isUTC) {
 }
 
 var getOrdinal = function(number) {
+	if (number > 10 && number < 20) {
+		// all teens return 'th'
+		return 'th';
+	}
+
 	var mod = number % 10;
 
 	switch(mod) {
@@ -64,8 +72,20 @@ var pad = function(n, width, z) {
 	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
 
+var dateGetter = function(date, methodName, isUTC, padSize) {
+	var val = (isUTC) ? date['getUTC' + methodName]() : date['get' + methodName]();
 
-var dayOfYear = function(date, padSize, isUTC) {
+	// Don't ever want 0th-based months.
+	if (methodName === 'Month') val++;
+
+	if (padSize && padSize > 0) {
+		val = pad(val, padSize);
+	}
+
+	return '' + val;
+};
+
+var dayOfYear = function(date, isUTC, padSize) {
 	var year = (isUTC) ? date.getUTCFullYear() : date.getFullYear();
 	var base = new Date('01-01-' + year);
 	var baseMS = base.getTime();  // Note: Unix timestamps are already in UTC here.
@@ -73,70 +93,89 @@ var dayOfYear = function(date, padSize, isUTC) {
 
 	var dayOfYear = Math.floor(diffMS / times.day) + 1;
 
-	if (typeof padSize === 'undefined') padSize = 0;
-
-	if (padSize > 0) {
-		return pad(dayOfYear, padSize);
-	} else {
-		return dayOfYear;
+	if (padSize && padSize > 0) {
+		dayOfYear = pad(dayOfYear, padSize)
 	}
+
+	return dayOfYear;
 };
 
 var formatPiece = function(date, format, isUTC) {
-	var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-	var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
 	switch(format) {
-		// Note: order matters in the regexp itself!
-		case 'MMMM': return months[(isUTC) ? date.getUTCMonth() : date.getMonth()]; break;
-		case 'MMM' : return months[(isUTC) ? date.getUTCMonth() : date.getMonth()].substr(0,3); break;
-		case 'MM'  : return pad(((isUTC) ? date.getUTCMonth() : date.getMonth()) + 1); break;
-		case 'Mo' : return (isUTC) ? (date.getUTCMonth() + 1) + getOrdinal(date.getUTCMonth() + 1) : (date.getMonth() + 1) + getOrdinal(date.getMonth() + 1); break;
-		case 'M'   : return ((isUTC) ? date.getUTCMonth() + 1 : date.getMonth()) + 1; break;
-		// TODO Q, Qo
-		case 'DDDD' : return dayOfYear(date, 3, isUTC); break;
-		case 'DDDo' : return dayOfYear(date, 0, isUTC) + getOrdinal(dayOfYear(date, 0, isUTC)); break;
-		case 'DDD' : return dayOfYear(date, 0, isUTC); break;
-		case 'DD' : return (isUTC) ? pad(date.getUTCDate()) : pad(date.getDate()); break;
-		case 'Do' : return (isUTC) ? date.getUTCDate() + getOrdinal(date.getUTCDate()) : date.getDate() + getOrdinal(date.getUTCDate()); break;
-		case 'D'  : return (isUTC) ? date.getUTCDate() : date.getDate(); break;
-		// TODO DDD, DDDo, DDDD
-		// TODO do
-		case 'dddd': return days[(isUTC) ? date.getUTCDay() : date.getDay()]; break;
-		case 'ddd' : return days[(isUTC) ? date.getUTCDay() : date.getDay()].substr(0,3); break;
-		case 'dd'  : return days[(isUTC) ? date.getUTCDay() : date.getDay()].substr(0,2); break;
-		case 'd'   : return (isUTC) ? date.getUTCDay() : date.getDay(); break;
+		// Note: order matters here
+
+		// Month
+		case 'MMMM': return months[dateGetter(date, 'Month', isUTC)]; break;
+		case 'MMM' : return months[dateGetter(date, 'Month', isUTC)].substr(0,3); break;
+		case 'MM'  : return dateGetter(date, 'Month', isUTC, 2); break;
+		case 'Mo'  : return dateGetter(date, 'Month', isUTC) + getOrdinal(dateGetter(date, 'Month', isUTC)); break;
+		case 'M'   : return dateGetter(date, 'Month', isUTC); break;
+		
+		// TODO Quarter Q, Qo
+		
+		// Day of Year
+		case 'DDDD': return dayOfYear(date, isUTC, 3); break;
+		case 'DDDo': return dayOfYear(date, isUTC) + getOrdinal(dayOfYear(date, isUTC)); break;
+		case 'DDD' : return dayOfYear(date, isUTC); break;
+
+		// Day of Month
+		case 'DD': return dateGetter(date, 'Date', isUTC, 2); break;
+		case 'Do': return dateGetter(date, 'Date', isUTC) + getOrdinal(dateGetter(date, 'Date', isUTC)); break;
+		case 'D' : return dateGetter(date, 'Date', isUTC); break;
+
+		// Day of Week
+		case 'dddd': return days[dateGetter(date, 'Day', isUTC)]; break;
+		case 'ddd' : return days[dateGetter(date, 'Day', isUTC)].substr(0,3); break;
+		case 'dd'  : return days[dateGetter(date, 'Day', isUTC)].substr(0,2); break;
+		case 'do'  : return dateGetter(date, 'Day', isUTC) + getOrdinal(dateGetter(date, 'Day', isUTC)); break;
+		case 'd'   : return dateGetter(date, 'Day', isUTC); break;
+
 		// TODO e, E?
 		// TODO w, wo, ww, W, Wo, WW
-		case 'yyyy': case 'YYYY' : return (isUTC) ? date.getUTCFullYear() : date.getFullYear(); break;
-		case 'yy'  : case 'YY' : return ('' + ((isUTC) ? date.getUTCFullYear() : date.getFullYear())).substr(2,2); break;
-		case 'y': case 'Y' : return (isUTC) ? date.getUTCFullYear() : date.getFullYear(); break;
+
+		// Year
+		case 'yyyy': case 'YYYY': return dateGetter(date, 'FullYear', isUTC); break;
+		case 'yy'  : case 'YY'  : return dateGetter(date, 'FullYear', isUTC).substr(2,2); break;
+		case 'y'   : case 'Y'   : return dateGetter(date, 'FullYear', isUTC); break;
+
 		// TODO Week years?
-		case 'A'  : return getAnteMeridiem(date, isUTC).toUpperCase(); break;
-		case 'a'  : return getAnteMeridiem(date, isUTC); break;
-		case 'HH'  : return pad((isUTC) ? date.getUTCHours() : date.getHours()); break;
-		case 'H'   : return (isUTC) ? date.getUTCHours() : date.getHours(); break;
-		case 'hh'  : return pad((isUTC) ? date.getUTCHours() : date.getHours() % 12); break;
-		case 'h'   : return ((isUTC) ? date.getUTCHours() : date.getHours() % 12); break;
-		case 'kk'  : return pad((isUTC) ? date.getUTCHours() + 1 : date.getHours() + 1); break;
-		case 'k'   : return (isUTC) ? date.getUTCHours() + 1 : date.getHours() + 1; break;
-		case 'mm'  : return pad((isUTC) ? date.getUTCMinutes() : date.getMinutes()); break;
-		case 'm'   : return (isUTC) ? date.getUTCMinutes() : date.getMinutes(); break;
-		case 'ss'  : return pad((isUTC) ? date.getUTCSeconds() : date.getSeconds()); break;
-		case 's'   : return (isUTC) ? date.getUTCSeconds() : date.getSeconds(); break;
-		case 'SSS'   : return (isUTC) ? date.getUTCMilliseconds() : date.getMilliseconds(); break;
-		case 'SS'   : return (isUTC) ? Math.floor(date.getUTCMilliseconds() / 10) : Math.floor(date.getMilliseconds() / 10); break;
-		case 'S'   : return (isUTC) ? Math.floor(date.getUTCMilliseconds() / 100) : Math.floor(date.getMilliseconds() / 100); break;
+
+		// AM/PM
+		case 'A': return getAnteMeridiem(date, isUTC).toUpperCase(); break;
+		case 'a': return getAnteMeridiem(date, isUTC); break;
+
+		// Hour
+		case 'HH': return dateGetter(date, 'Hours', isUTC, 2); break;
+		case 'H' : return dateGetter(date, 'Hours', isUTC); break;
+		case 'hh': return pad(dateGetter(date, 'Hours', isUTC) % 12, 2); break;
+		case 'h' : return dateGetter(date, 'Hours', isUTC) % 12; break;
+		case 'kk': return pad(parseInt(dateGetter(date, 'Hours', isUTC)) + 1, 2); break;
+		case 'k' : return parseInt(dateGetter(date, 'Hours', isUTC)) + 1; break;
+
+		// Minute
+		case 'mm': return dateGetter(date, 'Minutes', isUTC, 2); break;
+		case 'm' : return dateGetter(date, 'Minutes', isUTC); break;
+
+		// Second
+		case 'ss': return dateGetter(date, 'Seconds', isUTC, 2); break;
+		case 's' : return dateGetter(date, 'Seconds', isUTC); break;
+
+		// Fractional Second
+		case 'S'  : return Math.floor(parseInt(dateGetter(date, 'Milliseconds', isUTC)) / 100); break;
+		case 'SS'  : return Math.floor(parseInt(dateGetter(date, 'Milliseconds', isUTC)) / 10); break;
+		case 'SSS'  : return dateGetter(date, 'Milliseconds', isUTC); break;
+
 		// TODO z, zz, Z, ZZ
-		case 'X' : return Math.floor(date.getTime() / 100); break;
-		case 'x' : return date.getTime(); break;
+		
+		// Unix timestamp
+		case 'X': return Math.floor(date.getTime() / 1000); break;
+		case 'x': return date.getTime(); break;
 
 		default:
 			//  unrecognized - return unchanged
 			return format;
 	}
 }
-
 
 
 
@@ -164,7 +203,7 @@ lt.prototype.format = function(format) {
 		return formatPiece(self.datetime, match, self.isUTC);
 	}
 
-	return format.replace(/(MMMM+|MMM+|MM+|Mo+|M+|Qo+|Q|DDDD+|DDDo+|DDD+|DD+|Do+|D+|dddd+|ddd+|dd+|do+|d+|e+|E+|wo+|ww+|w+|Wo+|WW+|W+|YYYY+|YY+|Y+|gggg+|gg+|GGGG+|GG+|A+|a+|HH+|H+|hh+|h+|kk+|k+|mm+|m+|ss+|s+|SSS+|SS+|S+|zz+|z+|ZZ+|Z+|X+|x+)/g, replacer);
+	return format.replace(/(MMMM+|MMM+|MM+|Mo+|M+|Qo+|Q|DDDD+|DDDo+|DDD+|DD+|Do+|D+|dddd+|ddd+|dd+|do+|d+|e+|E+|wo+|ww+|w+|Wo+|WW+|W+|YYYY+|YY+|Y+|yyyy+|yy+|y+|gggg+|gg+|GGGG+|GG+|A+|a+|HH+|H+|hh+|h+|kk+|k+|mm+|m+|ss+|s+|SSS+|SS+|S+|zz+|z+|ZZ+|Z+|X+|x+)/g, replacer);
 };
 
 

@@ -28,6 +28,8 @@ describe('little-time', function(){
     });
 
     describe('format', function() {
+        var defaultTime = 'February 6, 2001 13:03:29.324';
+
         it('processes timestamps', function(){
             var result         = littleTime(1404843535580).format('ddd MMM Do YYYY HH:mm:ss');
             var expectedResult = 'Tue Jul 8th 2014 11:18:55';
@@ -40,19 +42,200 @@ describe('little-time', function(){
             assert.equal(result, expectedResult);
         });
 
-        describe('day of the year', function() {
-            it('DDDD', function() {
-                assert.equal(littleTime('January 5, 2001').format('DDDD'), '005');
+        describe('month', function() {
+            it('M', function() {
+                assert.equal(littleTime('February 6, 2001').format('M'), '2');
+            });
+
+            it('Mo 1', function() {
+                assert.equal(littleTime('January 6, 2001').format('Mo'), '1st');
+            });
+
+            it('Mo 2', function() {
+                assert.equal(littleTime(defaultTime).format('Mo'), '2nd');
+            });
+
+            it('Mo 3', function() {
+                assert.equal(littleTime('March 6, 2001').format('Mo'), '3rd');
+            });
+
+            it('Mo 4', function() {
+                assert.equal(littleTime('December 6, 2001').format('Mo'), '12th');
+            });
+
+            it('MM', function() {
+                assert.equal(littleTime(defaultTime).format('MM'), '02');
+            });
+
+            it('MMM', function() {
+                assert.equal(littleTime(defaultTime).format('MMM'), 'Feb');
+            });
+
+            it('MMMM', function() {
+                assert.equal(littleTime(defaultTime).format('MMMM'), 'February');
+            });
+        });
+
+        describe('day of month', function() {
+            it('D', function() {
+                assert.equal(littleTime(defaultTime).format('D'), '6');
+            });
+
+            it('Do 1', function() {
+                assert.equal(littleTime('March 11, 2001').format('Do'), '11th');
+            });
+
+            it('Do 2', function() {
+                assert.equal(littleTime('March 21, 2001').format('Do'), '21st');
+            });
+
+            it('Do 3', function() {
+                assert.equal(littleTime('March 22, 2001').format('Do'), '22nd');
+            });
+
+            it('Do 4', function() {
+                assert.equal(littleTime('March 23, 2001').format('Do'), '23rd');
+            });
+
+            it('DD', function() {
+                assert.equal(littleTime(defaultTime).format('DD'), '06');
+            });
+        });
+
+        describe('day of year', function() {
+            it('DDD', function() {
+                assert.equal(littleTime(defaultTime).format('DDD'), '37');
+            });
+
+            it('DDDo', function() {
+                assert.equal(littleTime('January 1, 2001').format('DDDo'), '1st');
+            });
+
+            it('DDDo', function() {
+                assert.equal(littleTime('January 2, 2001').format('DDDo'), '2nd');
+            });
+
+            it('DDDo', function() {
+                assert.equal(littleTime('January 3, 2001').format('DDDo'), '3rd');
             });
 
             it('DDDo', function() {
                 assert.equal(littleTime(1470442592891).format('DDDo'), '218th');
             });
 
-            it('DDD', function() {
-                assert.equal(littleTime('January 5, 2001').format('DDD'), '5');
+            it('DDDD', function() {
+                assert.equal(littleTime(defaultTime).format('DDDD'), '037');
+            });
+        });
+
+        describe('day of week', function() {
+            it('d', function() {
+                assert.equal(littleTime(defaultTime).format('d'), '2');
             });
 
+            it('do', function() {
+                assert.equal(littleTime(defaultTime).format('do'), '2nd');
+            });
+
+            it('dd', function() {
+                assert.equal(littleTime(defaultTime).format('dd'), 'Tu');
+            });
+
+            it('ddd', function() {
+                assert.equal(littleTime(defaultTime).format('ddd'), 'Tue');
+            });
+
+            it('dddd', function() {
+                assert.equal(littleTime(defaultTime).format('dddd'), 'Tuesday');
+            });
+        });
+
+        describe('year', function() {
+            it('YY', function() {
+                assert.equal(littleTime(defaultTime).format('YY'), '01');
+            });
+
+            it('YYYY', function() {
+                assert.equal(littleTime(defaultTime).format('YYYY'), '2001');
+            });
+
+            it('yy', function() {
+                assert.equal(littleTime(defaultTime).format('yy'), '01');
+            });
+
+            it('yyyy', function() {
+                assert.equal(littleTime(defaultTime).format('yyyy'), '2001');
+            });
+        });
+
+        describe('hours', function() {
+            it('H', function() {
+                assert.equal(littleTime(defaultTime).format('H'), '13');
+            });
+
+            it('HH', function() {
+                assert.equal(littleTime('February 6, 2001 08:03:29').format('HH'), '08');
+            });
+
+            it('h', function() {
+                assert.equal(littleTime(defaultTime).format('h'), '1');
+            });
+
+            it('hh', function() {
+                assert.equal(littleTime('February 6, 2001 08:03:29').format('hh'), '08');
+            });
+
+            it('k', function() {
+                assert.equal(littleTime(defaultTime).format('k'), '14');
+            });
+
+            it('kk', function() {
+                assert.equal(littleTime('February 6, 2001 08:03:29').format('kk'), '09');
+            });
+        });
+
+        describe('minutes', function() {
+            it('m', function() {
+                assert.equal(littleTime(defaultTime).format('m'), '3');
+            });
+
+            it('mm', function() {
+                assert.equal(littleTime(defaultTime).format('mm'), '03');
+            });
+        });
+
+        describe('second', function() {
+            it('s', function() {
+                assert.equal(littleTime(defaultTime).format('s'), '29');
+            });
+
+            it('ss', function() {
+                assert.equal(littleTime('February 6, 2001 08:03:09').format('ss'), '09');
+            });
+        });
+
+        describe('fractional second', function() {
+            it('S', function() {
+                assert.equal(littleTime(defaultTime).format('S'), '3');
+            });
+
+            it('SS', function() {
+                assert.equal(littleTime(defaultTime).format('SS'), '32');
+            });
+
+            it('SSS', function() {
+                assert.equal(littleTime(defaultTime).format('SSS'), '324');
+            });
+        });
+
+        describe('unix timestamp', function() {
+            it('X', function() {
+                assert.equal(littleTime(defaultTime).format('X'), '981493409');
+            });
+
+            it('x', function() {
+                assert.equal(littleTime(defaultTime).format('x'), '981493409324');
+            });
         });
     });
 

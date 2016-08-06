@@ -1,5 +1,8 @@
 little-time
 ===========
+[![Build Status](https://travis-ci.org/davidcalhoun/little-time.svg?branch=master)](https://travis-ci.org/davidcalhoun/little-time)
+
+
 Little time formatter, for when you don't have time for the whole kitchen sink
 
 

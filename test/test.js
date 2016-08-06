@@ -31,7 +31,7 @@ describe('little-time', function(){
         var defaultTime = 'February 6, 2001 13:03:29.324';
 
         it('processes timestamps', function(){
-            var result         = littleTime(1404843535580).format('ddd MMM Do YYYY HH:mm:ss');
+            var result         = littleTime('Jul 8 2014 11:18:55').format('ddd MMM Do YYYY HH:mm:ss');
             var expectedResult = 'Tue Jul 8th 2014 11:18:55';
             assert.equal(result, expectedResult);
         });
@@ -120,7 +120,7 @@ describe('little-time', function(){
             });
 
             it('DDDo', function() {
-                assert.equal(littleTime(1470442592891).format('DDDo'), '218th');
+                assert.equal(littleTime('August 5, 2016').format('DDDo'), '217th');
             });
 
             it('DDDD', function() {
@@ -230,11 +230,11 @@ describe('little-time', function(){
 
         describe('unix timestamp', function() {
             it('X', function() {
-                assert.equal(littleTime(defaultTime).format('X'), '981493409');
+                assert.equal(littleTime.utc(defaultTime).format('X'), '981493409');
             });
 
             it('x', function() {
-                assert.equal(littleTime(defaultTime).format('x'), '981493409324');
+                assert.equal(littleTime.utc(defaultTime).format('x'), '981493409324');
             });
         });
     });

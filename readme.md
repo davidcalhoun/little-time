@@ -50,3 +50,6 @@ littleTime(1470338048328).from(1470368048328);  // "8 hours ago"
 * 1.0.0 API changed, fixed fatal errors from previous version.  Many formatter changes and fixes.
 * 0.2.0 added fromNow() and from()
 * 0.1.0 Initial version, with only formatting (with UTC support)
+
+## License
+MIT

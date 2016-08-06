@@ -15,6 +15,73 @@
 
 'use strict';
 
+var times = {
+	minute: 60000,
+	twoMinutes: 120000,
+	hour: 3600000,
+	twoHours: 7200000,
+	day: 86400000,
+	twoDays: 172800000,
+	month: 2678400000,
+	twoMonths: 5356800000,
+	year: 31536000000,
+	twoYears: 63072000000
+};
+
+
+var getAnteMeridiem = function(date, isUTC) {
+	var hours = (isUTC) ? date.getUTCHours() : date.getHours();
+
+	return (hours < 12) ? 'am' : 'pm';
+}
+
+var getOrdinal = function(number) {
+	var mod = number % 10;
+
+	switch(mod) {
+		case 1:
+			return 'st';
+		break;
+
+		case 2:
+			return 'nd';
+		break;
+
+		case 3:
+			return 'rd';
+		break;
+
+		default:
+			return 'th';
+	}
+}
+
+// http://stackoverflow.com/questions/10073699/pad-a-number-with-leading-zeros-in-javascript
+var pad = function(n, width, z) {
+	n = n + '';
+	width = width || 2;
+	z = z || '0';
+	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
+
+
+var dayOfYear = function(date, padSize, isUTC) {
+	var year = (isUTC) ? date.getUTCFullYear() : date.getFullYear();
+	var base = new Date('01-01-' + year);
+	var baseMS = base.getTime();  // Note: Unix timestamps are already in UTC here.
+	var diffMS = date.getTime() - baseMS;
+
+	var dayOfYear = Math.floor(diffMS / times.day) + 1;
+
+	if (typeof padSize === 'undefined') padSize = 0;
+
+	if (padSize > 0) {
+		return pad(dayOfYear, padSize);
+	} else {
+		return dayOfYear;
+	}
+};
+
 var formatPiece = function(date, format, isUTC) {
 	var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 	var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -27,6 +94,9 @@ var formatPiece = function(date, format, isUTC) {
 		case 'Mo' : return (isUTC) ? (date.getUTCMonth() + 1) + getOrdinal(date.getUTCMonth() + 1) : (date.getMonth() + 1) + getOrdinal(date.getMonth() + 1); break;
 		case 'M'   : return ((isUTC) ? date.getUTCMonth() + 1 : date.getMonth()) + 1; break;
 		// TODO Q, Qo
+		case 'DDDD' : return dayOfYear(date, 3, isUTC); break;
+		case 'DDDo' : return dayOfYear(date, 0, isUTC) + getOrdinal(dayOfYear(date, 0, isUTC)); break;
+		case 'DDD' : return dayOfYear(date, 0, isUTC); break;
 		case 'DD' : return (isUTC) ? pad(date.getUTCDate()) : pad(date.getDate()); break;
 		case 'Do' : return (isUTC) ? date.getUTCDate() + getOrdinal(date.getUTCDate()) : date.getDate() + getOrdinal(date.getUTCDate()); break;
 		case 'D'  : return (isUTC) ? date.getUTCDate() : date.getDate(); break;
@@ -67,38 +137,6 @@ var formatPiece = function(date, format, isUTC) {
 	}
 }
 
-var getAnteMeridiem = function(date, isUTC) {
-	var hours = (isUTC) ? date.getUTCHours() : date.getHours();
-
-	return (hours < 12) ? 'am' : 'pm';
-}
-
-var getOrdinal = function(number) {
-	switch(number) {
-		case 1: case 21: case 31:
-			return 'st';
-		break;
-
-		case 2: case 22:
-			return 'nd';
-		break;
-
-		case 3: case 23:
-			return 'rd';
-		break;
-
-		default:
-			return 'th';
-	}
-}
-
-// http://stackoverflow.com/questions/10073699/pad-a-number-with-leading-zeros-in-javascript
-var pad = function(n, width, z) {
-	n = n + '';
-	width = width || 2;
-	z = z || '0';
-	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-}
 
 
 
@@ -135,19 +173,6 @@ lt.prototype.format = function(format) {
  * @example littleTime(1404843535580).from(1470367465850);
  */
 lt.prototype.from = function(timeB) {
-	var times = {
-		minute: 60000,
-		twoMinutes: 120000,
-		hour: 3600000,
-		twoHours: 7200000,
-		day: 86400000,
-		twoDays: 172800000,
-		month: 2678400000,
-		twoMonths: 5356800000,
-		year: 31536000000,
-		twoYears: 63072000000
-	};
-
 	var diff = timeB - this.datetime;
 
 	// past times fallthrough

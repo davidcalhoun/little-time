@@ -25,21 +25,35 @@ describe('little-time', function(){
     it('works as an npm module', function(){
         var localLittleTime = require('../little-time.js');
         assert.equal(typeof localLittleTime, 'function');
-        return;
     });
 
-    it('processes timestamps', function(){
-        var result         = littleTime(1404843535580).format('ddd MMM Do YYYY HH:mm:ss');
-        var expectedResult = 'Tue Jul 8th 2014 11:18:55';
-        assert.equal(result, expectedResult);
-        return;
-    });
+    describe('format', function() {
+        it('processes timestamps', function(){
+            var result         = littleTime(1404843535580).format('ddd MMM Do YYYY HH:mm:ss');
+            var expectedResult = 'Tue Jul 8th 2014 11:18:55';
+            assert.equal(result, expectedResult);
+        });
 
-    it('processes JS Date-friendly inputs', function(){
-        var result         = littleTime('Jul 07 2014 20:10:23').format('ddd MMM Do YYYY hh:mm:ssa');
-        var expectedResult = 'Mon Jul 7th 2014 08:10:23pm';
-        assert.equal(result, expectedResult);
-        return;
+        it('processes JS Date-friendly inputs', function(){
+            var result         = littleTime('Jul 07 2014 20:10:23').format('ddd MMM Do YYYY hh:mm:ssa');
+            var expectedResult = 'Mon Jul 7th 2014 08:10:23pm';
+            assert.equal(result, expectedResult);
+        });
+
+        describe('day of the year', function() {
+            it('DDDD', function() {
+                assert.equal(littleTime('January 5, 2001').format('DDDD'), '005');
+            });
+
+            it('DDDo', function() {
+                assert.equal(littleTime(1470442592891).format('DDDo'), '218th');
+            });
+
+            it('DDD', function() {
+                assert.equal(littleTime('January 5, 2001').format('DDD'), '5');
+            });
+
+        });
     });
 
     describe('fromNow', function(){

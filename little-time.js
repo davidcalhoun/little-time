@@ -87,11 +87,12 @@ var dateGetter = function(date, methodName, isUTC, padSize) {
 
 var dayOfYear = function(date, isUTC, padSize) {
 	var year = (isUTC) ? date.getUTCFullYear() : date.getFullYear();
-	var base = new Date('01-01-' + year);
-	var baseMS = base.getTime();  // Note: Unix timestamps are already in UTC here.
-	var diffMS = date.getTime() - baseMS;
+	var yearStart = new Date('1/1/' + year + ' 0:0:0');
 
-	var dayOfYear = Math.floor(diffMS / times.day) + 1;
+	// timezone adjustment
+	yearStart = yearStart.getTime() - yearStart.getTimezoneOffset() * 60 * 1000;
+
+	var dayOfYear = Math.floor((date.getTime() - yearStart) / times.day + 1);
 
 	if (padSize && padSize > 0) {
 		dayOfYear = pad(dayOfYear, padSize)

@@ -107,20 +107,20 @@ describe('little-time', function(){
                 assert.equal(littleTime(defaultTime).format('DDD'), '37');
             });
 
-            it('DDDo', function() {
+            it('DDDo 1', function() {
                 assert.equal(littleTime('January 1, 2001').format('DDDo'), '1st');
             });
 
-            it('DDDo', function() {
+            it('DDDo 2', function() {
                 assert.equal(littleTime('January 2, 2001').format('DDDo'), '2nd');
             });
 
-            it('DDDo', function() {
+            it('DDDo 3', function() {
                 assert.equal(littleTime('January 3, 2001').format('DDDo'), '3rd');
             });
 
-            it('DDDo', function() {
-                assert.equal(littleTime('August 5, 2016').format('DDDo'), '217th');
+            it('DDDo 4', function() {
+                assert.equal(littleTime('August 5, 2016').format('DDDo'), '218th');
             });
 
             it('DDDD', function() {

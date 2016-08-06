@@ -1,7 +1,7 @@
 {
   "name": "little-time",
   "homepage": "https://github.com/davidcalhoun/little-time",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "little-time.js",
   "description": "Tiny timestamp formatter (e.g. ddd mmm ddS yyyy HH:MM:ss)",
   "keywords": [

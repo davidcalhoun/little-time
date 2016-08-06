@@ -9,7 +9,11 @@ Little time formatter, for when you don't have time for the whole kitchen sink
 ===========
 Install
 
-`npm install`
+`npm install little-time`
+
+OR
+
+`git clone https://github.com/davidcalhoun/little-time.git`
 
 
 ===========

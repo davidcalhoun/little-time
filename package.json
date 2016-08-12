@@ -3,7 +3,7 @@
   "homepage": "https://github.com/davidcalhoun/little-time",
   "version": "1.0.6",
   "main": "little-time.js",
-  "description": "Tiny timestamp formatter (e.g. ddd mmm ddS yyyy HH:MM:ss)",
+  "description": "Tiny timestamp manipulator and formatter inspired by moment.js.  But more minimalist.",
   "keywords": [
     "time",
     "timestamp",

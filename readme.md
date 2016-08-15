@@ -1,13 +1,9 @@
-little-time
-===========
+# little-time
 [![Build Status](https://travis-ci.org/davidcalhoun/little-time.svg?branch=master)](https://travis-ci.org/davidcalhoun/little-time)
 
+Very small library that lets you do a few things like you can in moment.js, but in a much smaller package (only 1.5kb gzipped).
 
-Little time formatter, for when you don't have time for the whole kitchen sink
-
-
-===========
-Install
+## Installation
 
 `npm install little-time`
 
@@ -16,10 +12,9 @@ OR
 `git clone https://github.com/davidcalhoun/little-time.git`
 
 
-===========
-Very small library that lets you do a few things like you can in moment.js, but in a much smaller package (only 1.5kb gzipped).
+## Examples
 
-## Format times
+### Format times
 Time formatters are the same used by [moment.js](http://momentjs.com/docs/#/displaying/format/).
 
 Some examples:
@@ -41,7 +36,7 @@ littleTime.utc().format();                                  // "2016-08-05T23:23
 littleTime.utc().format('ddd MMM Do YYYY hh:mm:ssa');       // "Fri Aug 5th 2016 23:23:45pm"
 ```
 
-## Relative times
+### Relative times
 ```js
 littleTime(1404843535580).fromNow();            // "2 years ago"
 

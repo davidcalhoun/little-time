@@ -29,7 +29,7 @@
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha --check-leaks --use_strict",
-    "minify": "./node_modules/uglify-js/bin/uglifyjs -nmf -o little-time-min.js little-time.js"
+    "minify": "./node_modules/uglify-js/bin/uglifyjs -nmf --mangle-props --mangle-regex=\"/^_/\" -o little-time-min.js little-time.js"
   },
   "engines": {
     "node": ">=0.10.25"

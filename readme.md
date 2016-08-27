@@ -44,10 +44,6 @@ littleTime(1404843535580).fromNow();            // "2 years ago"
 littleTime(1470338048328).from(1470368048328);  // "8 hours ago"
 ```
 
-## TODO
-* More tests
-* Relative times: support for times in the future (e.g. "in two hours")
-
 ## Changelog
 * 1.1.0 from/fromNow: support for future times.  Internal code cleanup for better minification.
 * 1.0.0 API changed, fixed fatal errors from previous version.  Many formatter changes and fixes.

@@ -31,7 +31,6 @@ var times = {
 var months = [null, 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-
 var getAnteMeridiem = function(date, isUTC) {
 	var hours = (isUTC) ? date.getUTCHours() : date.getHours();
 

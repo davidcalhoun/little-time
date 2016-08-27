@@ -6,8 +6,6 @@ describe('fromNow', function(){
         assert = require('assert');
     });
 
-    var baseTime = 1470361760000;
-
     var times = {
         minute: 60000,
         twoMinutes: 120000,
@@ -21,64 +19,134 @@ describe('fromNow', function(){
         twoYears: 63072000000
     };
 
-    var origDateNow;
-    before(function() {
-        origDateNow = Date.now;
+    describe('past times', function() {
+        var baseTime;
+        var origDateNow;
+        before(function() {
+            origDateNow = Date.now;
 
-        // Always return a predictable timestamp for tests.
-        Date.now = function() {
-            return 1470361760000;
-        }
+            // Always return a predictable timestamp for tests.
+            Date.now = function() {
+                return 1470361760000;
+            }
+
+            baseTime = 1470361760000;
+        });
+
+        it('a few seconds', function() {
+            assert.equal(littleTime(baseTime - 5000).fromNow(), 'a few seconds ago');
+        });
+
+        it('a minute', function() {
+            assert.equal(littleTime(baseTime - times.minute).fromNow(), 'a minute ago');
+        });
+
+        it('2 minutes', function() {
+            assert.equal(littleTime(baseTime - times.twoMinutes).fromNow(), '2 minutes ago');
+        });
+
+        it('an hour', function() {
+            assert.equal(littleTime(baseTime - times.hour).fromNow(), 'an hour ago');
+        });
+
+        it('2 hours', function() {
+            assert.equal(littleTime(baseTime - times.twoHours).fromNow(), '2 hours ago');
+        });
+
+        it('a day', function() {
+            assert.equal(littleTime(baseTime - times.day).fromNow(), 'a day ago');
+        });
+
+        it('2 days', function() {
+            assert.equal(littleTime(baseTime - times.twoDays).fromNow(), '2 days ago');
+        });
+
+        it('a month', function() {
+            assert.equal(littleTime(baseTime - times.month).fromNow(), 'a month ago');
+        });
+
+        it('2 months', function() {
+            assert.equal(littleTime(baseTime - times.twoMonths).fromNow(), '2 months ago');
+        });
+
+        it('a year', function() {
+            assert.equal(littleTime(baseTime - times.year).fromNow(), 'a year ago');
+        });
+
+        it('2 years', function() {
+            assert.equal(littleTime(baseTime - times.twoYears).fromNow(), '2 years ago');
+        });
+
+
+        after(function() {
+            // Restore original Date.now
+            Date.now = origDateNow;
+        });
     });
 
-    it('returns "a few seconds ago"', function() {
-        assert.equal(littleTime(baseTime).fromNow(), 'a few seconds ago');
-    });
+    describe('future times', function() {
+        var baseTime;
+        var origDateNow;
+        before(function() {
+            origDateNow = Date.now;
 
-    it('returns "a minute ago"', function() {
-        assert.equal(littleTime(baseTime - times.minute).fromNow(), 'a minute ago');
-    });
+            // Always return a predictable timestamp for tests.
+            Date.now = function() {
+                return 1470361760000;
+            }
 
-    it('returns "2 minutes ago"', function() {
-        assert.equal(littleTime(baseTime - times.twoMinutes).fromNow(), '2 minutes ago');
-    });
+            baseTime = 1470361760000;
+        });
 
-    it('returns "an hour ago"', function() {
-        assert.equal(littleTime(baseTime - times.hour).fromNow(), 'an hour ago');
-    });
+        it('a few seconds', function() {
+            assert.equal(littleTime(baseTime + 5000).fromNow(), 'in a few seconds');
+        });
 
-    it('returns "2 hours ago"', function() {
-        assert.equal(littleTime(baseTime - times.twoHours).fromNow(), '2 hours ago');
-    });
+        it('a minute', function() {
+            assert.equal(littleTime(baseTime + times.minute).fromNow(), 'in a minute');
+        });
 
-    it('returns "a day ago"', function() {
-        assert.equal(littleTime(baseTime - times.day).fromNow(), 'a day ago');
-    });
+        it('2 minutes', function() {
+            assert.equal(littleTime(baseTime + times.twoMinutes).fromNow(), 'in 2 minutes');
+        });
 
-    it('returns "2 days ago"', function() {
-        assert.equal(littleTime(baseTime - times.twoDays).fromNow(), '2 days ago');
-    });
+        it('an hour', function() {
+            assert.equal(littleTime(baseTime + times.hour).fromNow(), 'in an hour');
+        });
 
-    it('returns "a month ago"', function() {
-        assert.equal(littleTime(baseTime - times.month).fromNow(), 'a month ago');
-    });
+        it('2 hours', function() {
+            assert.equal(littleTime(baseTime + times.twoHours).fromNow(), 'in 2 hours');
+        });
 
-    it('returns "2 months ago"', function() {
-        assert.equal(littleTime(baseTime - times.twoMonths).fromNow(), '2 months ago');
-    });
+        it('a day', function() {
+            assert.equal(littleTime(baseTime + times.day).fromNow(), 'in a day');
+        });
 
-    it('returns "a year ago"', function() {
-        assert.equal(littleTime(baseTime - times.year).fromNow(), 'a year ago');
-    });
+        it('2 days', function() {
+            assert.equal(littleTime(baseTime + times.twoDays).fromNow(), 'in 2 days');
+        });
 
-    it('returns "2 years ago"', function() {
-        assert.equal(littleTime(baseTime - times.twoYears).fromNow(), '2 years ago');
-    });
+        it('a month', function() {
+            assert.equal(littleTime(baseTime + times.month).fromNow(), 'in a month');
+        });
+
+        it('2 months', function() {
+            assert.equal(littleTime(baseTime + times.twoMonths).fromNow(), 'in 2 months');
+        });
+
+        it('a year', function() {
+            assert.equal(littleTime(baseTime + times.year).fromNow(), 'in a year');
+        });
+
+        it('2 years', function() {
+            assert.equal(littleTime(baseTime + times.twoYears).fromNow(), 'in 2 years');
+        });
 
 
-    after(function() {
-        // Restore original Date.now
-        Date.now = origDateNow;
+        after(function() {
+            // Restore original Date.now
+            Date.now = origDateNow;
+        });
     });
 
 });

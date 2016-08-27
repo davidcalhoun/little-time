@@ -141,7 +141,7 @@ lt.prototype._formatPiece = function(date, format) {
  * @private
  */
 lt.prototype._getAnteMeridiem = function(date) {
-	var hours = (this._isUTC) ? date.getUTCHours() : date.getHours();
+	var hours = this._dateGetter(date, _jsDateMethods._hours);
 
 	return (hours < 12) ? 'am' : 'pm';
 };
@@ -190,7 +190,7 @@ lt.prototype._dateGetter = function(date, methodName, padSize) {
 	var val = (this._isUTC) ? date['getUTC' + methodName]() : date['get' + methodName]();
 
 	// Don't ever want 0th-based months.
-	if (methodName === 'Month') val++;
+	if (methodName === _jsDateMethods._month) val++;
 
 	if (padSize && padSize > 0) {
 		val = this._pad(val, padSize);
@@ -203,7 +203,7 @@ lt.prototype._dateGetter = function(date, methodName, padSize) {
  * @private
  */
 lt.prototype._dayOfYear = function(date, padSize) {
-	var year = (this._isUTC) ? date.getUTCFullYear() : date.getFullYear();
+	var year = this._dateGetter(date, _jsDateMethods._fullyear);
 	var yearStart = new Date('1/1/' + year + ' 0:0:0');
 
 	// timezone adjustment
@@ -239,32 +239,46 @@ lt.prototype.format = function(format) {
 lt.prototype.from = function(timeB) {
 	var diff = timeB - this._datetime;
 
-	// past times fallthrough
-	if (diff < _times._minute) {
-		return 'a few seconds ago';
-	} else if (diff < _times._twoMinutes) {
-		return 'a minute ago';
-	} else if (diff < _times._hour) {
-		return Math.floor(diff / _times._minute) + ' minutes ago';
-	} else if (diff < _times._twoHours) {
-		return 'an hour ago';
-	} else if (diff < _times._day) {
-		return Math.floor(diff / _times._hour) + ' hours ago';
-	} else if (diff < _times._twoDays) {
-		return 'a day ago';
-	} else if (diff < _times._month) {
-		return Math.floor(diff / _times._day) + ' days ago';
-	} else if (diff < _times._twoMonths) {
-		return 'a month ago';
-	} else if (diff < _times._year) {
-		return Math.floor(diff / _times._month) + ' months ago';
-	} else if (diff < _times._twoYears) {
-		return 'a year ago';
-	} else {
-		return Math.floor(diff / _times._year) + ' years ago';
+	var isFuture = false;
+	if (diff < 0) {
+		isFuture = true;
+		diff = Math.abs(diff);
 	}
 
-	// todo: future times
+	var fromText;
+
+	// past times fallthrough
+	if (diff < _times._minute) {
+		fromText = 'a few seconds';
+	} else if (diff < _times._twoMinutes) {
+		fromText = 'a minute';
+	} else if (diff < _times._hour) {
+		fromText = Math.floor(diff / _times._minute) + ' minutes';
+	} else if (diff < _times._twoHours) {
+		fromText = 'an hour';
+	} else if (diff < _times._day) {
+		fromText = Math.floor(diff / _times._hour) + ' hours';
+	} else if (diff < _times._twoDays) {
+		fromText = 'a day';
+	} else if (diff < _times._month) {
+		fromText = Math.floor(diff / _times._day) + ' days';
+	} else if (diff < _times._twoMonths) {
+		fromText = 'a month';
+	} else if (diff < _times._year) {
+		fromText = Math.floor(diff / _times._month) + ' months';
+	} else if (diff < _times._twoYears) {
+		fromText = 'a year';
+	} else {
+		fromText = Math.floor(diff / _times._year) + ' years';
+	}
+
+	if (isFuture) {
+		fromText = 'in ' + fromText;
+	} else {
+		fromText += ' ago';
+	}
+
+	return fromText;
 };
 
 // e.g. littleTime(1404843535580).fromNow();

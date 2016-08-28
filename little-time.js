@@ -111,6 +111,206 @@ var lt = function lt(datetime, isUTC) {
 };
 
 
+
+// TODO Quarter Q, Qo, e, E?, w, wo, ww, Wo, WW, Week years?, z, zz, Z, ZZ
+lt.prototype._getPieceFormatters = function() {
+	var getAnteMeridiem = this._getAnteMeridiem.bind(this);
+	var month = this._dateGetter.bind(this, _jsDateMethods._month);
+	var dayOfYear = this._dayOfYear.bind(this);
+	var getOrdinal = this._getOrdinal.bind(this);
+	var getDate = this._dateGetter.bind(this, _jsDateMethods._date);
+	var getDay = this._dateGetter.bind(this, _jsDateMethods._day);
+	var getFullYear = this._dateGetter.bind(this, _jsDateMethods._fullyear);
+	var getHours = this._dateGetter.bind(this, _jsDateMethods._hours);
+	var getMinutes = this._dateGetter.bind(this, _jsDateMethods._minutes);
+	var getSeconds = this._dateGetter.bind(this, _jsDateMethods._seconds);
+	var getMilliseconds = this._dateGetter.bind(this, _jsDateMethods._milliseconds);
+	var pad = this._pad.bind(this);
+
+	return [
+		// Note: order matters here!
+
+		// Month
+		{
+			_key: 'MMMM',
+			_formatter: function() {return _months[month()];}
+		},
+		{
+			_key: 'MMM',
+			_formatter: function() {return _months[month()].substr(0,3);}
+		},
+		{
+			_key: 'MM',
+			_formatter: function() {return month(2);}
+		},
+		{
+			_key: 'Mo',
+			_formatter: function() {return month() + getOrdinal(month());}
+		},
+		{
+			_key: 'M',
+			_formatter: function() {return month();}
+		},
+
+		// Day of Year
+		{
+			_key: 'DDDD',
+			_formatter: function() {return dayOfYear(3);}
+		},
+		{
+			_key: 'DDDo',
+			_formatter: function() {return dayOfYear() + getOrdinal(dayOfYear());}
+		},
+		{
+			_key: 'DDD',
+			_formatter: function() {return dayOfYear();}
+		},
+
+		// Day of Month
+		{
+			_key: 'DD',
+			_formatter: function() {return getDate(2);}
+		},
+		{
+			_key: 'Do',
+			_formatter: function() {return getDate() + getOrdinal(getDate());}
+		},
+		{
+			_key: 'D',
+			_formatter: function() {return getDate();}
+		},
+
+		// Day of Week
+		{
+			_key: 'dddd',
+			_formatter: function() {return _days[getDay()];}
+		},
+		{
+			_key: 'ddd',
+			_formatter: function() {return _days[getDay()].substr(0,3);}
+		},
+		{
+			_key: 'dd',
+			_formatter: function() {return _days[getDay()].substr(0,2);}
+		},
+		{
+			_key: 'do',
+			_formatter: function() {return getDay() + getOrdinal(getDay());}
+		},
+		{
+			_key: 'd',
+			_formatter: function() {return getDay();}
+		},
+
+		// Year
+		{
+			_key: 'yyyy',
+			_formatter: function() {return getFullYear();}
+		},
+		{
+			_key: 'YYYY',
+			_formatter: function() {return getFullYear();}
+		},
+		{
+			_key: 'yy',
+			_formatter: function() {return getFullYear().substr(2,2);}
+		},
+		{
+			_key: 'YY',
+			_formatter: function() {return getFullYear().substr(2,2);}
+		},
+		{
+			_key: 'y',
+			_formatter: function() {return getFullYear();}
+		},
+		{
+			_key: 'Y',
+			_formatter: function() {return getFullYear();}
+		},
+
+		// AM/PM
+		{
+			_key: 'A',
+			_formatter: function() {return getAnteMeridiem().toUpperCase();}
+		},
+		{
+			_key: 'a',
+			_formatter: function() {return getAnteMeridiem();}
+		},
+
+		// Hour
+		{
+			_key: 'HH',
+			_formatter: function() {return getHours(2);}
+		},
+		{
+			_key: 'H',
+			_formatter: function() {return getHours();}
+		},
+		{
+			_key: 'hh',
+			_formatter: function() {return pad(getHours() % 12, 2);}
+		},
+		{
+			_key: 'h',
+			_formatter: function() {return (getHours() % 12);}
+		},
+		{
+			_key: 'kk',
+			_formatter: function() {return pad(parseInt(getHours()) + 1, 2);}
+		},
+		{
+			_key: 'k',
+			_formatter: function() {return parseInt(getHours()) + 1;}
+		},
+
+		// Minute
+		{
+			_key: 'mm',
+			_formatter: function() {return getMinutes(2);}
+		},
+		{
+			_key: 'm',
+			_formatter: function() {return getMinutes();}
+		},
+
+		// Second
+		{
+			_key: 'ss',
+			_formatter: function() {return getSeconds(2);}
+		},
+		{
+			_key: 's',
+			_formatter: function() {return getSeconds();}
+		},
+
+		// Fractional Second
+		{
+			_key: 'SSS',
+			_formatter: function() {return getMilliseconds();}
+		},
+		{
+			_key: 'SS',
+			_formatter: function() {return Math.floor(parseInt(getMilliseconds()) / 10);}
+		},
+		{
+			_key: 'S',
+			_formatter: function() {return Math.floor(parseInt(getMilliseconds()) / 100);}
+		},
+
+		// Unix timestamp
+		{
+			_key: 'X',
+			_formatter: function() {return Math.floor(this._datetime.getTime() / 1000);}
+		},
+		{
+			_key: 'x',
+			_formatter: function() {return this._datetime.getTime();}
+		}
+	];
+};
+
+
 /**
  * Formats a time based on a string formatter.
  * @param {string} format
@@ -119,105 +319,37 @@ var lt = function lt(datetime, isUTC) {
 lt.prototype.format = function(format) {
 	if (typeof format === 'undefined') format = 'YYYY-MM-DDTHH:mm:ssZ';
 
-	var self = this;
+	if (!this._pieceFormatters) {
+		this._pieceFormatters = this._getPieceFormatters();
+		this._pieceFormatterRegex = this._pieceFormatters.map(function(formatter){return formatter._key + '+|';}).join('');
+		this._pieceFormatterRegex = new RegExp(this._pieceFormatterRegex, 'g');
+	}
 
-	var replacer = function(match){
-		return self._formatPiece(self._datetime, match, self._isUTC);
-	};
-
-	return format.replace(/(MMMM+|MMM+|MM+|Mo+|M+|Qo+|Q|DDDD+|DDDo+|DDD+|DD+|Do+|D+|dddd+|ddd+|dd+|do+|d+|e+|E+|wo+|ww+|w+|Wo+|WW+|W+|YYYY+|YY+|Y+|yyyy+|yy+|y+|gggg+|gg+|GGGG+|GG+|A+|a+|HH+|H+|hh+|h+|kk+|k+|mm+|m+|ss+|s+|SSS+|SS+|S+|zz+|z+|ZZ+|Z+|X+|x+)/g, replacer);
+	return format.replace(this._pieceFormatterRegex, this._formatReplacer.bind(this));
 };
 
 /**
  * Replacer for regexp used in format.
- * @param {object} date
  * @param {string} format
  * @private
  */
-lt.prototype._formatPiece = function(date, format) {
-	switch(format) {
-		// Note: order matters here
-
-		// Month
-		case 'MMMM': return _months[this._dateGetter(date, _jsDateMethods._month)]; break;
-		case 'MMM' : return _months[this._dateGetter(date, _jsDateMethods._month)].substr(0,3); break;
-		case 'MM'  : return this._dateGetter(date, _jsDateMethods._month, 2); break;
-		case 'Mo'  : return this._dateGetter(date, _jsDateMethods._month) + this._getOrdinal(this._dateGetter(date, _jsDateMethods._month)); break;
-		case 'M'   : return this._dateGetter(date, _jsDateMethods._month); break;
-		
-		// TODO Quarter Q, Qo
-		
-		// Day of Year
-		case 'DDDD': return this._dayOfYear(date, 3); break;
-		case 'DDDo': return this._dayOfYear(date) + this._getOrdinal(this._dayOfYear(date)); break;
-		case 'DDD' : return this._dayOfYear(date); break;
-
-		// Day of Month
-		case 'DD': return this._dateGetter(date, _jsDateMethods._date, 2); break;
-		case 'Do': return this._dateGetter(date, _jsDateMethods._date) + this._getOrdinal(this._dateGetter(date, _jsDateMethods._date)); break;
-		case 'D' : return this._dateGetter(date, _jsDateMethods._date); break;
-
-		// Day of Week
-		case 'dddd': return _days[this._dateGetter(date, _jsDateMethods._day)]; break;
-		case 'ddd' : return _days[this._dateGetter(date, _jsDateMethods._day)].substr(0,3); break;
-		case 'dd'  : return _days[this._dateGetter(date, _jsDateMethods._day)].substr(0,2); break;
-		case 'do'  : return this._dateGetter(date, _jsDateMethods._day) + this._getOrdinal(this._dateGetter(date, _jsDateMethods._day)); break;
-		case 'd'   : return this._dateGetter(date, _jsDateMethods._day); break;
-
-		// TODO e, E?
-		// TODO w, wo, ww, W, Wo, WW
-
-		// Year
-		case 'yyyy': case 'YYYY': return this._dateGetter(date, _jsDateMethods._fullyear); break;
-		case 'yy'  : case 'YY'  : return this._dateGetter(date, _jsDateMethods._fullyear).substr(2,2); break;
-		case 'y'   : case 'Y'   : return this._dateGetter(date, _jsDateMethods._fullyear); break;
-
-		// TODO Week years?
-
-		// AM/PM
-		case 'A': return this._getAnteMeridiem(date).toUpperCase(); break;
-		case 'a': return this._getAnteMeridiem(date); break;
-
-		// Hour
-		case 'HH': return this._dateGetter(date, _jsDateMethods._hours, 2); break;
-		case 'H' : return this._dateGetter(date, _jsDateMethods._hours); break;
-		case 'hh': return this._pad(this._dateGetter(date, _jsDateMethods._hours) % 12, 2); break;
-		case 'h' : return this._dateGetter(date, _jsDateMethods._hours) % 12; break;
-		case 'kk': return this._pad(parseInt(this._dateGetter(date, _jsDateMethods._hours)) + 1, 2); break;
-		case 'k' : return parseInt(this._dateGetter(date, _jsDateMethods._hours)) + 1; break;
-
-		// Minute
-		case 'mm': return this._dateGetter(date, _jsDateMethods._minutes, 2); break;
-		case 'm' : return this._dateGetter(date, _jsDateMethods._minutes); break;
-
-		// Second
-		case 'ss': return this._dateGetter(date, _jsDateMethods._seconds, 2); break;
-		case 's' : return this._dateGetter(date, _jsDateMethods._seconds); break;
-
-		// Fractional Second
-		case 'S'  : return Math.floor(parseInt(this._dateGetter(date, _jsDateMethods._milliseconds)) / 100); break;
-		case 'SS'  : return Math.floor(parseInt(this._dateGetter(date, _jsDateMethods._milliseconds)) / 10); break;
-		case 'SSS'  : return this._dateGetter(date, _jsDateMethods._milliseconds); break;
-
-		// TODO z, zz, Z, ZZ
-		
-		// Unix timestamp
-		case 'X': return Math.floor(date.getTime() / 1000); break;
-		case 'x': return date.getTime(); break;
-
-		default:
-			//  unrecognized - return unchanged
-			return format;
+lt.prototype._formatReplacer = function(piece) {
+	for (var formatter=0, len=this._pieceFormatters.length; formatter<len; formatter++) {
+		if (piece === this._pieceFormatters[formatter]._key) {
+			return this._pieceFormatters[formatter]._formatter.call(this, piece);
+		}
 	}
+
+	// Fallthrough
+	return piece;
 };
 
 /**
  * Determines whether a time is AM or PM.
- * @param {object} date Native JS Date object.
  * @private
  */
-lt.prototype._getAnteMeridiem = function(date) {
-	var hours = this._dateGetter(date, _jsDateMethods._hours);
+lt.prototype._getAnteMeridiem = function() {
+	var hours = this._dateGetter(_jsDateMethods._hours);
 
 	return (hours < 12) ? 'am' : 'pm';
 };
@@ -268,13 +400,12 @@ lt.prototype._pad = function(n, width, z) {
 
 /**
  * Accesses the appropriate method on a JS Date object.
- * @param {object}  date        Native JS Date object
  * @param {string}  methodName  JS Date method name, e.g. 'Month' for date.getMonth()
  * @param {number=} padSize
  * @private
  */
-lt.prototype._dateGetter = function(date, methodName, padSize) {
-	var val = (this._isUTC) ? date['getUTC' + methodName]() : date['get' + methodName]();
+lt.prototype._dateGetter = function(methodName, padSize) {
+	var val = (this._isUTC) ? this._datetime['getUTC' + methodName]() : this._datetime['get' + methodName]();
 
 	// Don't ever want 0th-based months, because it makes things confusing.
 	if (methodName === _jsDateMethods._month) val++;
@@ -288,18 +419,17 @@ lt.prototype._dateGetter = function(date, methodName, padSize) {
 
 /**
  * Determines the current day of the year (January 1 is day 1).
- * @param {object}  date     Native JS Date object
  * @param {number=} padSize
  * @private
  */
-lt.prototype._dayOfYear = function(date, padSize) {
-	var year = this._dateGetter(date, _jsDateMethods._fullyear);
+lt.prototype._dayOfYear = function(padSize) {
+	var year = this._dateGetter(_jsDateMethods._fullyear);
 	var yearStart = new Date('1/1/' + year + ' 0:0:0');
 
 	// timezone adjustment
 	yearStart = yearStart.getTime() - yearStart.getTimezoneOffset() * 60 * 1000;
 
-	var dayOfYear = Math.floor((date.getTime() - yearStart) / 86400000 + 1);
+	var dayOfYear = Math.floor((this._datetime.getTime() - yearStart) / 86400000 + 1);
 
 	if (padSize && padSize > 0) {
 		dayOfYear = this._pad(dayOfYear, padSize);
@@ -342,6 +472,7 @@ lt.prototype.from = function(timeB, hideSuffix) {
 			break;
 		}
 
+		// Fallthrough condition
 		fromText = Math.floor(diff / _times[_times.length - 2]._ms) + ' years';
 	}
 

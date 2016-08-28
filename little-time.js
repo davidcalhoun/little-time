@@ -16,18 +16,62 @@
 'use strict';
 
 // Time constants based in milliseconds.
-var _times = {
-	_minute: 60000,
-	_twoMinutes: 120000,
-	_hour: 3600000,
-	_twoHours: 7200000,
-	_day: 86400000,
-	_twoDays: 172800000,
-	_month: 2678400000,
-	_twoMonths: 5356800000,
-	_year: 31536000000,
-	_twoYears: 63072000000
-};
+var _times = [
+	{	
+		// minute
+		_ms: 60000,
+		_decomposed: 'a few seconds'
+	},
+	{
+		// twoMinutes
+		_ms: 120000,
+		_decomposed: 'a minute'
+	},
+	{
+		// hour
+		_ms: 3600000,
+		_decomposed: 'minutes',
+		_displayNumber: true
+	},
+	{
+		// twoHours
+		_ms: 7200000,
+		_decomposed: 'an hour'
+	},
+	{
+		// day
+		_ms: 86400000,
+		_decomposed: 'hours',
+		_displayNumber: true
+	},
+	{
+		// twoDays
+		_ms: 172800000,
+		_decomposed: 'a day'
+	},
+	{
+		// month
+		_ms: 2678400000,
+		_decomposed: 'days',
+		_displayNumber: true
+	},
+	{
+		// twoMonths
+		_ms: 5356800000,
+		_decomposed: 'a month'
+	},
+	{
+		// year
+		_ms: 31536000000,
+		_decomposed: 'months',
+		_displayNumber: true
+	},
+	{
+		// twoYears
+		_ms: 63072000000,
+		_decomposed: 'a year'
+	}
+];
 
 // Date method names, e.g. 'Month' for date.getMonth() and date.getUTCMonth()
 var _jsDateMethods = {
@@ -255,7 +299,7 @@ lt.prototype._dayOfYear = function(date, padSize) {
 	// timezone adjustment
 	yearStart = yearStart.getTime() - yearStart.getTimezoneOffset() * 60 * 1000;
 
-	var dayOfYear = Math.floor((date.getTime() - yearStart) / _times._day + 1);
+	var dayOfYear = Math.floor((date.getTime() - yearStart) / 86400000 + 1);
 
 	if (padSize && padSize > 0) {
 		dayOfYear = this._pad(dayOfYear, padSize);
@@ -275,36 +319,30 @@ lt.prototype.from = function(timeB, hideSuffix) {
 	var diff = timeB - this._datetime;
 
 	var isFuture = false;
+
+	// Date is in the future.  Set to absolute value so we can reuse time logic below.
 	if (diff < 0) {
 		isFuture = true;
 		diff = Math.abs(diff);
 	}
 
+	// Find the closest text match, starting from seconds and progressing to years.
 	var fromText;
+	for (var time=0, len=_times.length; time<len; time++) {
+		if (diff < _times[time]._ms) {
+			// Text match found.
 
-	// past times fallthrough
-	if (diff < _times._minute) {
-		fromText = 'a few seconds';
-	} else if (diff < _times._twoMinutes) {
-		fromText = 'a minute';
-	} else if (diff < _times._hour) {
-		fromText = Math.floor(diff / _times._minute) + ' minutes';
-	} else if (diff < _times._twoHours) {
-		fromText = 'an hour';
-	} else if (diff < _times._day) {
-		fromText = Math.floor(diff / _times._hour) + ' hours';
-	} else if (diff < _times._twoDays) {
-		fromText = 'a day';
-	} else if (diff < _times._month) {
-		fromText = Math.floor(diff / _times._day) + ' days';
-	} else if (diff < _times._twoMonths) {
-		fromText = 'a month';
-	} else if (diff < _times._year) {
-		fromText = Math.floor(diff / _times._month) + ' months';
-	} else if (diff < _times._twoYears) {
-		fromText = 'a year';
-	} else {
-		fromText = Math.floor(diff / _times._year) + ' years';
+			if (_times[time]._displayNumber) {
+				// '8 minutes', '2 hours', etc.
+				fromText = Math.floor(diff / _times[time - 2]._ms) + ' ' + _times[time]._decomposed;
+			} else {
+				// 'a few seconds ago', 'a minute', etc
+				fromText = _times[time]._decomposed;
+			}
+			break;
+		}
+
+		fromText = Math.floor(diff / _times[_times.length - 2]._ms) + ' years';
 	}
 
 	if (!hideSuffix) {

@@ -399,7 +399,7 @@ lt.prototype._pad = function(n, width, z) {
 };
 
 /**
- * Accesses the appropriate method on a JS Date object.
+ * Accesses the appropriate method on a JS Date object, taking into account UTC time and padding.
  * @param {string}  methodName  JS Date method name, e.g. 'Month' for date.getMonth()
  * @param {number=} padSize
  * @private

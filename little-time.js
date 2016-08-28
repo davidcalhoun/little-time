@@ -15,6 +15,7 @@
 
 'use strict';
 
+// Time constants based in milliseconds.
 var _times = {
 	_minute: 60000,
 	_twoMinutes: 120000,
@@ -28,6 +29,7 @@ var _times = {
 	_twoYears: 63072000000
 };
 
+// Date method names, e.g. 'Month' for date.getMonth() and date.getUTCMonth()
 var _jsDateMethods = {
 	_month: 'Month',
 	_date: 'Date',
@@ -39,10 +41,18 @@ var _jsDateMethods = {
 	_milliseconds: 'Milliseconds'
 };
 
+// Names of the months of the year.  Index 0 is null because we never want 0th-based months (makes things confusing).
 var _months = [null, 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+// Names of the days of the week.
 var _days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-// Constructor
+
+/*
+ * @param {(number|string)=} datetime  Defaults to now.
+ * @param {boolean}          isUTC
+ * @constructor
+ */
 var lt = function lt(datetime, isUTC) {
 	// Self-instantiate if needed.
 	if (!this || !(this instanceof lt)) {
@@ -58,6 +68,26 @@ var lt = function lt(datetime, isUTC) {
 
 
 /**
+ * Formats a time based on a string formatter.
+ * @param {string} format
+ * @example littleTime().format('ddd MMM Do YYYY HH:mm:ss');  // "Fri Aug 5th 2016 16:23:45pm"
+ */
+lt.prototype.format = function(format) {
+	if (typeof format === 'undefined') format = 'YYYY-MM-DDTHH:mm:ssZ';
+
+	var self = this;
+
+	var replacer = function(match){
+		return self._formatPiece(self._datetime, match, self._isUTC);
+	};
+
+	return format.replace(/(MMMM+|MMM+|MM+|Mo+|M+|Qo+|Q|DDDD+|DDDo+|DDD+|DD+|Do+|D+|dddd+|ddd+|dd+|do+|d+|e+|E+|wo+|ww+|w+|Wo+|WW+|W+|YYYY+|YY+|Y+|yyyy+|yy+|y+|gggg+|gg+|GGGG+|GG+|A+|a+|HH+|H+|hh+|h+|kk+|k+|mm+|m+|ss+|s+|SSS+|SS+|S+|zz+|z+|ZZ+|Z+|X+|x+)/g, replacer);
+};
+
+/**
+ * Replacer for regexp used in format.
+ * @param {object} date
+ * @param {string} format
  * @private
  */
 lt.prototype._formatPiece = function(date, format) {
@@ -138,6 +168,8 @@ lt.prototype._formatPiece = function(date, format) {
 };
 
 /**
+ * Determines whether a time is AM or PM.
+ * @param {object} date Native JS Date object.
  * @private
  */
 lt.prototype._getAnteMeridiem = function(date) {
@@ -147,6 +179,8 @@ lt.prototype._getAnteMeridiem = function(date) {
 };
 
 /**
+ * Determines what ordinal to append to a number (e.g. 'st' for 1, 'nd' for 2).
+ * @param {number} number
  * @private
  */
 lt.prototype._getOrdinal = function(number) {
@@ -175,7 +209,12 @@ lt.prototype._getOrdinal = function(number) {
 	}
 };
 
-// http://stackoverflow.com/questions/10073699/this._pad-a-number-with-leading-zeros-in-javascript
+/**
+ * Pads a number with leading zeroes.
+ * @param {number}  n
+ * @param {number=} width
+ * @param {string=} z      Pad character
+ */
 lt.prototype._pad = function(n, width, z) {
 	n = n + '';
 	width = width || 2;
@@ -184,12 +223,16 @@ lt.prototype._pad = function(n, width, z) {
 };
 
 /**
+ * Accesses the appropriate method on a JS Date object.
+ * @param {object}  date        Native JS Date object
+ * @param {string}  methodName  JS Date method name, e.g. 'Month' for date.getMonth()
+ * @param {number=} padSize
  * @private
  */
 lt.prototype._dateGetter = function(date, methodName, padSize) {
 	var val = (this._isUTC) ? date['getUTC' + methodName]() : date['get' + methodName]();
 
-	// Don't ever want 0th-based months.
+	// Don't ever want 0th-based months, because it makes things confusing.
 	if (methodName === _jsDateMethods._month) val++;
 
 	if (padSize && padSize > 0) {
@@ -200,6 +243,9 @@ lt.prototype._dateGetter = function(date, methodName, padSize) {
 };
 
 /**
+ * Determines the current day of the year (January 1 is day 1).
+ * @param {object}  date     Native JS Date object
+ * @param {number=} padSize
  * @private
  */
 lt.prototype._dayOfYear = function(date, padSize) {
@@ -219,24 +265,13 @@ lt.prototype._dayOfYear = function(date, padSize) {
 };
 
 
-lt.prototype.format = function(format) {
-	if (typeof format === 'undefined') format = 'YYYY-MM-DDTHH:mm:ssZ';
-
-	var self = this;
-
-	var replacer = function(match){
-		return self._formatPiece(self._datetime, match, self._isUTC);
-	};
-
-	return format.replace(/(MMMM+|MMM+|MM+|Mo+|M+|Qo+|Q|DDDD+|DDDo+|DDD+|DD+|Do+|D+|dddd+|ddd+|dd+|do+|d+|e+|E+|wo+|ww+|w+|Wo+|WW+|W+|YYYY+|YY+|Y+|yyyy+|yy+|y+|gggg+|gg+|GGGG+|GG+|A+|a+|HH+|H+|hh+|h+|kk+|k+|mm+|m+|ss+|s+|SSS+|SS+|S+|zz+|z+|ZZ+|Z+|X+|x+)/g, replacer);
-};
-
-
 /**
- * @param timeB Unix timestamp in milliseconds.
- * @example littleTime(1404843535580).from(1470367465850);
+ * Creates a display-friendly time length.
+ * @param {number}  timeB       Unix timestamp in milliseconds.
+ * @param {boolean} hideSuffix  Whether to hide the 'ago' or 'in'.
+ * @example littleTime(1404843535580).from(1470367465850, true);  // "2 years"
  */
-lt.prototype.from = function(timeB) {
+lt.prototype.from = function(timeB, hideSuffix) {
 	var diff = timeB - this._datetime;
 
 	var isFuture = false;
@@ -272,20 +307,30 @@ lt.prototype.from = function(timeB) {
 		fromText = Math.floor(diff / _times._year) + ' years';
 	}
 
-	if (isFuture) {
-		fromText = 'in ' + fromText;
-	} else {
-		fromText += ' ago';
+	if (!hideSuffix) {
+		if (isFuture) {
+			fromText = 'in ' + fromText;
+		} else {
+			fromText += ' ago';
+		}
 	}
 
 	return fromText;
 };
 
-// e.g. littleTime(1404843535580).fromNow();
+/**
+ * Creates a display-friendly time length from current time.
+ * @example littleTime(1404843535580).fromNow();
+ */
 lt.prototype.fromNow = function() {
 	return this.from(Date.now());
 };
 
+/**
+ * Special constructor for always displaying UTC time.
+ * @param {number} datetime
+ * @constructor
+ */
 lt.utc = function(datetime) {
 	// Create new instance of little-time with the UTC flag set to true.
 	return new lt(datetime, true);

@@ -73,6 +73,7 @@ littleTime.utc('2016-08-29 12:00:00-07:00').fromNow();
 ```
 
 ## Changelog
+* 1.1.4 from: fix logic when working with two little-time instances.
 * 1.1.0 from/fromNow: support for future times.  Internal code cleanup for better minification.
 * 1.0.0 API changed, fixed fatal errors from previous version.  Many formatter changes and fixes.
 * 0.2.0 added fromNow() and from()

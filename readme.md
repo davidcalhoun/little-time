@@ -56,7 +56,6 @@ littleTime(1470338048328).from(1470368048328, true);
 // Get the difference between two little-time instances.
 var firstTime = littleTime('2016-08-28 12:00:00');
 var secondTime = littleTime('2016-08-27 12:00:00');
-
 firstTime.from(secondTime, true);
 // "a day"
 ```

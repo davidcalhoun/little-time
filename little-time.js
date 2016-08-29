@@ -104,7 +104,6 @@ var lt = function lt(datetime, isUTC) {
 	}
 
 	this._isUTC = isUTC;
-
 	this._datetime = (typeof datetime !== 'undefined') ? new Date(datetime) : new Date();
 
 	return this;
@@ -312,14 +311,16 @@ lt.prototype._getPieceFormatters = function() {
 
 
 /**
- * Formats a time based on a string formatter.
+ * Formats a time based on a string formatter.  E.g. 'ddd' -> 'Fri'
  * @param {string} format
  * @example littleTime().format('ddd MMM Do YYYY HH:mm:ss');  // "Fri Aug 5th 2016 16:23:45pm"
  */
 lt.prototype.format = function(format) {
-	if (typeof format === 'undefined') format = 'YYYY-MM-DDTHH:mm:ssZ';
+	// Note: there will never be cases where a valid format is unexpectedly falsy (e.g. 0), so this is safe.
+	if (!format) format = 'YYYY-MM-DDTHH:mm:ssZ';
 
 	if (!this._pieceFormatters) {
+		// Get all the piece formatter bound to this scope.
 		this._pieceFormatters = this._getPieceFormatters();
 		this._pieceFormatterRegex = this._pieceFormatters.map(function(formatter){return formatter._key + '+|';}).join('');
 		this._pieceFormatterRegex = new RegExp(this._pieceFormatterRegex, 'g');
@@ -330,12 +331,13 @@ lt.prototype.format = function(format) {
 
 /**
  * Replacer for regexp used in format.
- * @param {string} format
+ * @param {string} piece
  * @private
  */
 lt.prototype._formatReplacer = function(piece) {
 	for (var formatter=0, len=this._pieceFormatters.length; formatter<len; formatter++) {
 		if (piece === this._pieceFormatters[formatter]._key) {
+			// Return the piece translated through its specialized formatter.
 			return this._pieceFormatters[formatter]._formatter.call(this, piece);
 		}
 	}
@@ -349,9 +351,7 @@ lt.prototype._formatReplacer = function(piece) {
  * @private
  */
 lt.prototype._getAnteMeridiem = function() {
-	var hours = this._dateGetter(_jsDateMethods._hours);
-
-	return (hours < 12) ? 'am' : 'pm';
+	return (this._dateGetter(_jsDateMethods._hours) < 12) ? 'am' : 'pm';
 };
 
 /**
@@ -370,15 +370,12 @@ lt.prototype._getOrdinal = function(number) {
 	switch(mod) {
 		case 1:
 			return 'st';
-		break;
 
 		case 2:
 			return 'nd';
-		break;
 
 		case 3:
 			return 'rd';
-		break;
 
 		default:
 			return 'th';
@@ -405,12 +402,14 @@ lt.prototype._pad = function(n, width, z) {
  * @private
  */
 lt.prototype._dateGetter = function(methodName, padSize) {
-	var val = (this._isUTC) ? this._datetime['getUTC' + methodName]() : this._datetime['get' + methodName]();
+	var methodPrefix = (this._isUTC) ? 'getUTC' : 'get';
+	var val = this._datetime[methodPrefix + methodName]();
 
-	// Don't ever want 0th-based months, because it makes things confusing.
+	// Don't ever want 0th-based months, because it makes logic too confusing.
 	if (methodName === _jsDateMethods._month) val++;
 
-	if (padSize && padSize > 0) {
+	// Add zero padding if needed.
+	if (padSize > 0) {
 		val = this._pad(val, padSize);
 	}
 
@@ -423,15 +422,15 @@ lt.prototype._dateGetter = function(methodName, padSize) {
  * @private
  */
 lt.prototype._dayOfYear = function(padSize) {
-	var year = this._dateGetter(_jsDateMethods._fullyear);
-	var yearStart = new Date('1/1/' + year + ' 0:0:0');
+	// Get the time at the beginning of the requested year.
+	var yearStart = new Date('1/1/' + this._dateGetter(_jsDateMethods._fullyear) + ' 0:0:0 Z');
 
-	// timezone adjustment
-	yearStart = yearStart.getTime() - yearStart.getTimezoneOffset() * 60 * 1000;
-
+	// 86400000 = ms in one day.  Would be better not to repeat this here, but we can't easily get it out of the
+	// data structure above.
 	var dayOfYear = Math.floor((this._datetime.getTime() - yearStart) / 86400000 + 1);
 
-	if (padSize && padSize > 0) {
+	// Add zero padding if needed.
+	if (padSize > 0) {
 		dayOfYear = this._pad(dayOfYear, padSize);
 	}
 
@@ -449,13 +448,16 @@ lt.prototype.from = function(timeB, hideSuffix) {
 	if (timeB instanceof lt) {
 		timeB = timeB._datetime;
 	}
-	
+
 	var diff = timeB - this._datetime;
 	var isFuture = false;
 
-	// Date is in the future.  Set to absolute value so we can reuse time logic below.
+	// Date is in the future.
 	if (diff < 0) {
+		// Set flag for suffix handling below.
 		isFuture = true;
+
+		// Set to absolute value so we can reuse the same time logic below.
 		diff = Math.abs(diff);
 	}
 
@@ -463,15 +465,17 @@ lt.prototype.from = function(timeB, hideSuffix) {
 	var fromText;
 	for (var time=0, len=_times.length; time<len; time++) {
 		if (diff < _times[time]._ms) {
-			// Text match found.
+			// Text match found for this time range.
 
 			if (_times[time]._displayNumber) {
-				// '8 minutes', '2 hours', etc.
+				// Display with a number, e.g. '8 minutes', '2 hours', etc.
 				fromText = Math.floor(diff / _times[time - 2]._ms) + ' ' + _times[time]._decomposed;
 			} else {
-				// 'a few seconds ago', 'a minute', etc
+				// Display with hardcoded value, e.g. 'a few seconds ago', 'a minute', etc
 				fromText = _times[time]._decomposed;
 			}
+
+			// Match found, so the job is done - break out of for loop.
 			break;
 		}
 
@@ -479,6 +483,7 @@ lt.prototype.from = function(timeB, hideSuffix) {
 		fromText = Math.floor(diff / _times[_times.length - 2]._ms) + ' years';
 	}
 
+	// Suffix/prefix handling.
 	if (!hideSuffix) {
 		if (isFuture) {
 			fromText = 'in ' + fromText;

@@ -15,7 +15,7 @@ OR
 ## Examples
 
 ### Format times
-Time formatters are the same used by [moment.js](http://momentjs.com/docs/#/displaying/format/).
+Time formatters syntax is the same used by [moment.js](http://momentjs.com/docs/#/displaying/format/).
 
 Some examples:
 
@@ -39,34 +39,36 @@ littleTime('Jul 07 2014 20:10:23').format('ddd MMM Do YYYY hh:mm:ssa');
 
 ### Relative times (past and future)
 ```js
+// From current time.
 littleTime(1404843535580).fromNow();
 // "2 years ago"
 
-// Relative time between two arbitrary times.
+// Duration between two times.
 littleTime(1470338048328).from(1470368048328);
 // "8 hours ago"
 littleTime(1470368048328).from(1470338048328);
 // "in 8 hours"
 
-// Relative time with "ago" or "in" suffix/prefix removed.
-littleTime(1470338048328).from(1470368048328, true);
-// "8 hours"
-
-
-// Get the difference between two little-time instances.
+// Duration between two little-time instances.
 var firstTime = littleTime('2016-08-28 12:00:00');
 var secondTime = littleTime('2016-08-27 12:00:00');
 firstTime.from(secondTime, true);
 // "a day"
+
+// Duration with no "ago" or "in" suffix/prefix.
+littleTime(1470338048328).from(1470368048328, true);
+// "8 hours"
 ```
 
 ### UTC support.
-All methods above can be used for outputting to UTC times.
-```
+All methods above can be used for outputting UTC times.
+```js
 littleTime.utc('2016-08-28 12:00:00-07:00').format();
 // "2016-08-28T19:00:00Z"
+
 littleTime.utc('2016-08-28 12:00:00-07:00').format('ddd MMM Do YYYY hh:mm:ssa');
 // "Sun Aug 28th 2016 07:00:00pm"
+
 littleTime.utc('2016-08-29 12:00:00-07:00').fromNow();
 // "50 minutes ago"
 ```

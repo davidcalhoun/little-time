@@ -35,12 +35,6 @@ littleTime(1404843535580).format('ddd MMM Do YYYY HH:mm:ss');
 // "Tue Jul 8th 2014 11:18:55"
 littleTime('Jul 07 2014 20:10:23').format('ddd MMM Do YYYY hh:mm:ssa');
 // "Mon Jul 7th 2014 08:10:23pm"
-
-// UTC time support.
-littleTime.utc().format();
-// "2016-08-05T23:23:45Z"
-littleTime.utc().format('ddd MMM Do YYYY hh:mm:ssa');
-// "Fri Aug 5th 2016 23:23:45pm"
 ```
 
 ### Relative times (past and future)
@@ -61,11 +55,22 @@ littleTime(1470338048328).from(1470368048328, true);
 // Hide "ago" suffix
 ```
 
+### UTC support.
+All methods above can be used for outputting to UTC times.
+```
+littleTime.utc('2016-08-28 12:00:00-07:00').format();
+// "2016-08-28T19:00:00Z"
+littleTime.utc('2016-08-28 12:00:00-07:00').format('ddd MMM Do YYYY hh:mm:ssa');
+// "Sun Aug 28th 2016 07:00:00pm"
+littleTime.utc('2016-08-29 12:00:00-07:00').fromNow();
+// "50 minutes ago"
+```
+
 ## Changelog
 * 1.1.0 from/fromNow: support for future times.  Internal code cleanup for better minification.
 * 1.0.0 API changed, fixed fatal errors from previous version.  Many formatter changes and fixes.
 * 0.2.0 added fromNow() and from()
-* 0.1.0 Initial version, with only formatting (with UTC support)
+* 0.1.0 Initial version, with only formatting and UTC support
 
 ## License
 MIT

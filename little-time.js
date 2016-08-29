@@ -446,8 +446,11 @@ lt.prototype._dayOfYear = function(padSize) {
  * @example littleTime(1404843535580).from(1470367465850, true);  // "2 years"
  */
 lt.prototype.from = function(timeB, hideSuffix) {
+	if (timeB instanceof lt) {
+		timeB = timeB._datetime;
+	}
+	
 	var diff = timeB - this._datetime;
-
 	var isFuture = false;
 
 	// Date is in the future.  Set to absolute value so we can reuse time logic below.

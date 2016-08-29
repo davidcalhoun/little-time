@@ -1,43 +1,49 @@
 # little-time
 [![Build Status](https://travis-ci.org/davidcalhoun/little-time.svg?branch=master)](https://travis-ci.org/davidcalhoun/little-time)
 
-Very small library that lets you do a few things like you can in moment.js, but in a much smaller package (only 1.5kb gzipped).
+Very tiny time manipulator with a few features:
+* time formatter (e.g. convert 'ddd MMM Do YYYY HH:mm:ss' to 'Fri Aug 5th 2016 16:23:45pm')
+* get the relative time from now (e.g. '10 hours ago')
+* get the relative time between any two times
+* UTC support
+* Only ~1.5kb gzipped
 
 ## Installation
 
 `npm install little-time`
 
-OR
-
-`git clone https://github.com/davidcalhoun/little-time.git`
-
-
 ## Examples
 
-### Format times
-Time formatters syntax is the same used by [moment.js](http://momentjs.com/docs/#/displaying/format/).
+### format()
+Time formatter syntax is the same used by [moment.js](http://momentjs.com/docs/#/displaying/format/).
 
+
+#### Display current time.
 Some examples:
 
 ```js
-// Get current time and use the default formatter.  These are equivalent:
+// Display current time (uses the default formatter 'YYYY-MM-DDTHH:mm:ssZ'):
 littleTime().format();
 // "2016-08-05T16:23:45Z"
-littleTime(Date.now()).format('YYYY-MM-DDTHH:mm:ssZ');
-// "2016-08-05T16:23:45Z"
 
-// Format the current time.
+// Custom formatter.
 littleTime().format('ddd MMM Do YYYY HH:mm:ss');
 // "Fri Aug 5th 2016 16:23:45pm"
-
-// Format arbitrary times that the JS Date object supports as inputs.
-littleTime(1404843535580).format('ddd MMM Do YYYY HH:mm:ss');
-// "Tue Jul 8th 2014 11:18:55"
-littleTime('Jul 07 2014 20:10:23').format('ddd MMM Do YYYY hh:mm:ssa');
-// "Mon Jul 7th 2014 08:10:23pm"
 ```
 
-### Relative times (past and future)
+#### Display arbitrary time.
+Anything that the native JS Date object parses can be inputted.
+
+These are all acceptable:
+
+```js
+littleTime(1404843535580);
+littleTime('Jul 07 2020 20:10:23');
+littleTime(Date.now());
+littleTime(new Date('Jul 07 2020 20:10:23'));
+```
+
+### Durations
 ```js
 // From current time.
 littleTime(1404843535580).fromNow();

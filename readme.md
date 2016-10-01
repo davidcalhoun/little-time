@@ -1,7 +1,9 @@
 # little-time
 [![Build Status](https://travis-ci.org/davidcalhoun/little-time.svg?branch=master)](https://travis-ci.org/davidcalhoun/little-time)
 
-Very tiny time manipulator with a few features:
+The motivation behind this project is that I've seen a lot of code that only use a few functions from `moment.js`, which is a great tool.  The primary use case seems to be time formatting and getting relative times - but to bring in all of `moment.js` just for those few simple functions is too much.  So here's a tiny alternative - with the same function signatures as `moment.js` for convenience!
+
+Minimalist Features:
 * time formatter (e.g. convert 'ddd MMM Do YYYY HH:mm:ss' to 'Fri Aug 5th 2016 16:23:45pm')
 * get the relative time from now (e.g. '10 hours ago')
 * get the relative time between any two times

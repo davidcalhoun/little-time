@@ -1,7 +1,7 @@
 {
   "name": "little-time",
   "homepage": "https://github.com/davidcalhoun/little-time",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "main": "little-time.js",
   "description": "Minimalist timestamp manipulator and formatter inspired by moment.js",
   "keywords": [

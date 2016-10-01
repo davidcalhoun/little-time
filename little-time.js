@@ -82,7 +82,8 @@ var _jsDateMethods = {
 	_hours: 'Hours',
 	_minutes: 'Minutes',
 	_seconds: 'Seconds',
-	_milliseconds: 'Milliseconds'
+	_milliseconds: 'Milliseconds',
+	_time: 'Time'
 };
 
 // Names of the months of the year.  Index 0 is null because we never want 0th-based months (makes things confusing).
@@ -91,6 +92,15 @@ var _months = [null, 'January', 'February', 'March', 'April', 'May', 'June', 'Ju
 // Names of the days of the week.
 var _days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+var _getMonthName = function(index) {
+	if (typeof index === 'function') index = index();
+	return _months[index];
+}
+
+var _getDayName = function(index) {
+	if (typeof index === 'function') index = index();
+	return _days[index];
+}
 
 /*
  * @param {(number|string)=} datetime  Defaults to now.
@@ -113,18 +123,21 @@ var lt = function lt(datetime, isUTC) {
 
 // TODO Quarter Q, Qo, e, E?, w, wo, ww, Wo, WW, Week years?, z, zz, Z, ZZ
 lt.prototype._getPieceFormatters = function() {
-	var getAnteMeridiem = this._getAnteMeridiem.bind(this);
-	var month = this._dateGetter.bind(this, _jsDateMethods._month);
-	var dayOfYear = this._dayOfYear.bind(this);
-	var getOrdinal = this._getOrdinal.bind(this);
-	var getDate = this._dateGetter.bind(this, _jsDateMethods._date);
-	var getDay = this._dateGetter.bind(this, _jsDateMethods._day);
-	var getFullYear = this._dateGetter.bind(this, _jsDateMethods._fullyear);
-	var getHours = this._dateGetter.bind(this, _jsDateMethods._hours);
-	var getMinutes = this._dateGetter.bind(this, _jsDateMethods._minutes);
-	var getSeconds = this._dateGetter.bind(this, _jsDateMethods._seconds);
-	var getMilliseconds = this._dateGetter.bind(this, _jsDateMethods._milliseconds);
-	var pad = this._pad.bind(this);
+	var self = this;
+
+	var getAnteMeridiem = self._getAnteMeridiem.bind(self);
+	var month = self._dateGetter.bind(self, _jsDateMethods._month);
+	var dayOfYear = self._dayOfYear.bind(self);
+	var getOrdinal = self._getOrdinal.bind(self);
+	var getDate = self._dateGetter.bind(self, _jsDateMethods._date);
+	var getDay = self._dateGetter.bind(self, _jsDateMethods._day);
+	var getFullYear = self._dateGetter.bind(self, _jsDateMethods._fullyear);
+	var getHours = self._dateGetter.bind(self, _jsDateMethods._hours);
+	var getMinutes = self._dateGetter.bind(self, _jsDateMethods._minutes);
+	var getSeconds = self._dateGetter.bind(self, _jsDateMethods._seconds);
+	var getMilliseconds = self._dateGetter.bind(self, _jsDateMethods._milliseconds);
+	var getTime = self._dateGetter.bind(self, _jsDateMethods._time);
+	var pad = self._pad.bind(self);
 
 	return [
 		// Note: order matters here!
@@ -132,15 +145,15 @@ lt.prototype._getPieceFormatters = function() {
 		// Month
 		{
 			_key: 'MMMM',
-			_formatter: function() {return _months[month()];}
+			_formatter: _getMonthName.bind(this, month)
 		},
 		{
 			_key: 'MMM',
-			_formatter: function() {return _months[month()].substr(0,3);}
+			_formatter: function() {return _getMonthName(month).substr(0,3);}
 		},
 		{
 			_key: 'MM',
-			_formatter: function() {return month(2);}
+			_formatter: month.bind(self, 2)
 		},
 		{
 			_key: 'Mo',
@@ -148,13 +161,13 @@ lt.prototype._getPieceFormatters = function() {
 		},
 		{
 			_key: 'M',
-			_formatter: function() {return month();}
+			_formatter: month
 		},
 
 		// Day of Year
 		{
 			_key: 'DDDD',
-			_formatter: function() {return dayOfYear(3);}
+			_formatter: dayOfYear.bind(self, 3)
 		},
 		{
 			_key: 'DDDo',
@@ -162,13 +175,13 @@ lt.prototype._getPieceFormatters = function() {
 		},
 		{
 			_key: 'DDD',
-			_formatter: function() {return dayOfYear();}
+			_formatter: dayOfYear
 		},
 
 		// Day of Month
 		{
 			_key: 'DD',
-			_formatter: function() {return getDate(2);}
+			_formatter: getDate.bind(self, 2)
 		},
 		{
 			_key: 'Do',
@@ -176,21 +189,21 @@ lt.prototype._getPieceFormatters = function() {
 		},
 		{
 			_key: 'D',
-			_formatter: function() {return getDate();}
+			_formatter: getDate
 		},
 
 		// Day of Week
 		{
 			_key: 'dddd',
-			_formatter: function() {return _days[getDay()];}
+			_formatter: _getDayName.bind(this, getDay)
 		},
 		{
 			_key: 'ddd',
-			_formatter: function() {return _days[getDay()].substr(0,3);}
+			_formatter: function() {return _getDayName(getDay).substr(0,3);}
 		},
 		{
 			_key: 'dd',
-			_formatter: function() {return _days[getDay()].substr(0,2);}
+			_formatter: function() {return _getDayName(getDay).substr(0,2);}
 		},
 		{
 			_key: 'do',
@@ -198,17 +211,17 @@ lt.prototype._getPieceFormatters = function() {
 		},
 		{
 			_key: 'd',
-			_formatter: function() {return getDay();}
+			_formatter: getDay
 		},
 
 		// Year
 		{
 			_key: 'yyyy',
-			_formatter: function() {return getFullYear();}
+			_formatter: getFullYear
 		},
 		{
 			_key: 'YYYY',
-			_formatter: function() {return getFullYear();}
+			_formatter: getFullYear
 		},
 		{
 			_key: 'yy',
@@ -220,11 +233,11 @@ lt.prototype._getPieceFormatters = function() {
 		},
 		{
 			_key: 'y',
-			_formatter: function() {return getFullYear();}
+			_formatter: getFullYear
 		},
 		{
 			_key: 'Y',
-			_formatter: function() {return getFullYear();}
+			_formatter: getFullYear
 		},
 
 		// AM/PM
@@ -234,17 +247,17 @@ lt.prototype._getPieceFormatters = function() {
 		},
 		{
 			_key: 'a',
-			_formatter: function() {return getAnteMeridiem();}
+			_formatter: getAnteMeridiem
 		},
 
 		// Hour
 		{
 			_key: 'HH',
-			_formatter: function() {return getHours(2);}
+			_formatter: getHours.bind(self, 2)
 		},
 		{
 			_key: 'H',
-			_formatter: function() {return getHours();}
+			_formatter: getHours
 		},
 		{
 			_key: 'hh',
@@ -266,27 +279,27 @@ lt.prototype._getPieceFormatters = function() {
 		// Minute
 		{
 			_key: 'mm',
-			_formatter: function() {return getMinutes(2);}
+			_formatter: getMinutes.bind(self, 2)
 		},
 		{
 			_key: 'm',
-			_formatter: function() {return getMinutes();}
+			_formatter: getMinutes
 		},
 
 		// Second
 		{
 			_key: 'ss',
-			_formatter: function() {return getSeconds(2);}
+			_formatter: getSeconds.bind(self, 2)
 		},
 		{
 			_key: 's',
-			_formatter: function() {return getSeconds();}
+			_formatter: getSeconds
 		},
 
 		// Fractional Second
 		{
 			_key: 'SSS',
-			_formatter: function() {return getMilliseconds();}
+			_formatter: getMilliseconds
 		},
 		{
 			_key: 'SS',
@@ -300,11 +313,11 @@ lt.prototype._getPieceFormatters = function() {
 		// Unix timestamp
 		{
 			_key: 'X',
-			_formatter: function() {return Math.floor(this._datetime.getTime() / 1000);}
+			_formatter: function() {return Math.floor(self._datetime.getTime() / 1000);}
 		},
 		{
 			_key: 'x',
-			_formatter: function() {return this._datetime.getTime();}
+			_formatter: function() {return self._datetime.getTime();}
 		}
 	];
 };

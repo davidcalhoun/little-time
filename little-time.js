@@ -126,7 +126,7 @@ var lt = function lt(datetime, isUTC) {
 
 
 
-// TODO Quarter Q, Qo, e, E?, w, wo, ww, Wo, WW, Week years?, z, zz, Z, ZZ
+// TODO Quarter e, E?, w, wo, ww, Wo, WW, Week years?, z, zz, Z, ZZ
 lt.prototype._getPieceFormatters = function() {
 	var self = this;
 
@@ -153,6 +153,16 @@ lt.prototype._getPieceFormatters = function() {
 		{
 			_key: 'M',
 			_formatter: self._dateGetter.bind(self, _jsDateMethods._month)
+		},
+
+		// Quarter
+		{
+			_key: 'Qo',
+			_formatter: self._getQuarter.bind(self, true)
+		},
+		{
+			_key: 'Q',
+			_formatter: self._getQuarter.bind(self)
 		},
 
 		// Day of Year
@@ -204,6 +214,22 @@ lt.prototype._getPieceFormatters = function() {
 			_key: 'd',
 			_formatter: self._dateGetter.bind(self, _jsDateMethods._day)
 		},
+
+		// Week of year
+		{
+			_key: 'ww',
+			_formatter: self._weekOfYear.bind(self, 2)
+		},
+		{
+			_key: 'wo',
+			_formatter: self._weekOfYear.bind(self, null, true)
+		},
+		{
+			_key: 'w',
+			_formatter: self._weekOfYear.bind(self)
+		},
+
+		// TODO: ISO week of year
 
 		// Year
 		{
@@ -326,7 +352,7 @@ lt.prototype.format = function(format) {
 	if (!format) format = 'YYYY-MM-DDTHH:mm:ssZ';
 
 	if (!self._pieceFormatters) {
-		// Get all the piece formatter bound to this scope.
+		// Get all the piece formatters bound to this scope.
 		self._pieceFormatters = self._getPieceFormatters();
 		self._pieceFormatterRegex = self._pieceFormatters.map(function(formatter){return formatter._key + '+|';}).join('');
 		self._pieceFormatterRegex = new RegExp(self._pieceFormatterRegex, 'g');
@@ -455,6 +481,39 @@ lt.prototype._dayOfYear = function(padSize, addOrdinal) {
 
 	return dayOfYear;
 };
+
+lt.prototype._weekOfYear = function(padSize, addOrdinal) {
+	var self = this;
+
+	var yearStart = new Date('1/1/' + self._dateGetter(_jsDateMethods._fullyear) + ' 0:0:0 Z');
+
+	var weekOfYear = Math.floor((self._dayOfYear() + yearStart.getUTCDay() - 1) / 7) + 1;
+
+	var yearEnd = new Date('12/31/' + self._dateGetter(_jsDateMethods._fullyear) + ' 0:0:0 Z');
+	var dayOfYearEnd = yearEnd.getUTCDay();
+
+	if (weekOfYear === 53 && dayOfYearEnd !== 6) {
+		weekOfYear = 1;  // first week of next year
+	}
+
+	// Add zero padding if needed.
+	if (padSize > 0) {
+		weekOfYear = self._pad(weekOfYear, padSize);
+	}
+
+	if (typeof addOrdinal === 'boolean' && addOrdinal) {
+		weekOfYear += self._getOrdinal(weekOfYear);
+	}
+
+	return weekOfYear;
+}
+
+
+lt.prototype._getQuarter = function(addOrdinal) {
+	var self = this;
+	var quarter = Math.ceil(self._dateGetter(_jsDateMethods._month) / 3);
+	return (typeof addOrdinal === 'boolean' && addOrdinal) ? quarter + self._getOrdinal(quarter) : quarter;
+}
 
 
 /**

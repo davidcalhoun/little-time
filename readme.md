@@ -1,5 +1,6 @@
 # little-time
 [![Build Status](https://travis-ci.org/davidcalhoun/little-time.svg?branch=master)](https://travis-ci.org/davidcalhoun/little-time)
+[![Downloads][downloads-image]][npm-url]
 
 The motivation behind this project is that I've seen a lot of code that only use a few functions from `moment.js`, which is a great tool.  The primary use case seems to be time formatting and getting relative times - but to bring in all of `moment.js` just for those few simple functions is too much.  So here's a tiny alternative - with the same function signatures as `moment.js` for convenience!
 
@@ -91,3 +92,7 @@ littleTime.utc('2016-08-29 12:00:00-07:00').fromNow();
 
 ## License
 MIT
+
+[downloads-image]: https://img.shields.io/npm/dt/little-time.svg
+[npm-url]: https://www.npmjs.com/package/little-time
+[npm-image]: https://img.shields.io/npm/v/little-time.svg

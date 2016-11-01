@@ -36,7 +36,7 @@ littleTime().format();
 
 ```js
 littleTime().format('ddd MMM Do YYYY HH:mm:ss');
-// "Fri Aug 5th 2016 16:23:45pm"
+// "Fri Aug 5th 2016 16:23:45"
 ```
 
 #### Time formats
@@ -54,7 +54,6 @@ littleTime(new Date('Jul 07 2020 20:10:23'));
 ### Relative times (or durations)
 
 #### From now
-
 ```js
 littleTime(1404843535580).fromNow();
 // "2 years ago"

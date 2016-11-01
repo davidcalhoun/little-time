@@ -2,14 +2,16 @@
 [![Build Status](https://travis-ci.org/davidcalhoun/little-time.svg?branch=master)](https://travis-ci.org/davidcalhoun/little-time)
 [![Downloads][downloads-image]][npm-url]
 
-The motivation behind this project is that I've seen a lot of code that only use a few functions from `moment.js`, which is a great tool.  The primary use case seems to be time formatting and getting relative times - but to bring in all of `moment.js` just for those few simple functions is too much.  So here's a tiny alternative - with the same function signatures as `moment.js` for convenience!
+`moment.js` is a great tool, but oftentimes folks only want to bring in a few functions, namely time formatting and relative times (e.g. `5 minutes ago`).  But to bring in all of `moment.js` just for those few simple functions ends up being a lot of wasted bandwidth and extra processing time the client needs to perform before page load.
+
+So here's a tiny alternative with just a few essential functions.  And for convenience, they have the same function signatures as `moment.js`!
 
 Minimalist Features:
+* Only ~1.5kb gzipped
 * time formatter (e.g. convert 'ddd MMM Do YYYY HH:mm:ss' to 'Fri Aug 5th 2016 16:23:45pm')
 * get the relative time from now (e.g. '10 hours ago')
 * get the relative time between any two times
 * UTC support
-* Only ~1.5kb gzipped
 
 ## Installation
 
@@ -22,19 +24,22 @@ Time formatter syntax is the same used by [moment.js](http://momentjs.com/docs/#
 
 
 #### Display current time.
-Some examples:
+
+##### Default formatter ('YYYY-MM-DDTHH:mm:ssZ')
 
 ```js
-// Display current time (uses the default formatter 'YYYY-MM-DDTHH:mm:ssZ'):
 littleTime().format();
 // "2016-08-05T16:23:45Z"
+```
 
-// Custom formatter.
+##### Custom formatter
+
+```js
 littleTime().format('ddd MMM Do YYYY HH:mm:ss');
 // "Fri Aug 5th 2016 16:23:45pm"
 ```
 
-#### Display arbitrary time.
+#### Time formats
 Anything that the native JS Date object parses can be inputted.
 
 These are all acceptable:
@@ -46,38 +51,58 @@ littleTime(Date.now());
 littleTime(new Date('Jul 07 2020 20:10:23'));
 ```
 
-### Durations
+### Relative times (or durations)
+
+#### From now
+
 ```js
-// From current time.
 littleTime(1404843535580).fromNow();
 // "2 years ago"
+```
 
-// Duration between two times.
+#### Duration between two times
+```js
 littleTime(1470338048328).from(1470368048328);
 // "8 hours ago"
-littleTime(1470368048328).from(1470338048328);
-// "in 8 hours"
+```
 
-// Duration between two little-time instances.
-var firstTime = littleTime('2016-08-28 12:00:00');
-var secondTime = littleTime('2016-08-27 12:00:00');
-firstTime.from(secondTime, true);
-// "a day"
-
-// Duration with no "ago" or "in" suffix/prefix.
+#### Duration between two times, with no "ago" or "in" suffix/prefix
+```js
 littleTime(1470338048328).from(1470368048328, true);
 // "8 hours"
 ```
 
+#### Duration between two times, one in the future
+```js
+littleTime(1470368048328).from(1470338048328);
+// "in 8 hours"
+```
+
+#### Duration between two `little-time` instances
+```js
+var firstTime = littleTime('2016-08-28 12:00:00');
+var secondTime = littleTime('2016-08-27 12:00:00');
+firstTime.from(secondTime, true);
+// "a day"
+```
+
 ### UTC support.
 All methods above can be used for outputting UTC times.
+
+#### UTC default formatter
 ```js
 littleTime.utc('2016-08-28 12:00:00-07:00').format();
 // "2016-08-28T19:00:00Z"
+```
 
+#### UTC custom format function
+```js
 littleTime.utc('2016-08-28 12:00:00-07:00').format('ddd MMM Do YYYY hh:mm:ssa');
 // "Sun Aug 28th 2016 07:00:00pm"
+```
 
+#### UTC time from now
+```js
 littleTime.utc('2016-08-29 12:00:00-07:00').fromNow();
 // "50 minutes ago"
 ```

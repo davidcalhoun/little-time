@@ -51,7 +51,7 @@ littleTime(Date.now());
 littleTime(new Date('Jul 07 2020 20:10:23'));
 ```
 
-### Relative times (or durations)
+### Relative times (durations)
 
 #### From now
 ```js

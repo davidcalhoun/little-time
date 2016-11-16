@@ -2,15 +2,15 @@
 [![Build Status](https://travis-ci.org/davidcalhoun/little-time.svg?branch=master)](https://travis-ci.org/davidcalhoun/little-time)
 [![Downloads][downloads-image]][npm-url]
 
-`moment.js` is a great tool, but oftentimes folks only want to bring in a few functions, namely time formatting and relative times (e.g. `5 minutes ago`).  But to bring in all of `moment.js` just for those few simple functions ends up being a lot of wasted bandwidth and extra processing time the client needs to perform before page load.
+`moment.js` is a great tool, but oftentimes folks want to use only a few of its many functions, namely time formatting and relative times (e.g. `5 minutes ago`).  To bring in all of `moment.js` just for those few simple functions ends up being a lot of wasted bandwidth and extra processing time the client needs to perform before page load.  Even if you run a dead code eliminator, you still incur extra processing time each time you need to re-minify your code, resulting in increased build times.
 
-So here's a tiny alternative with just a few essential functions.  And for convenience, they have the same function signatures as `moment.js`!
+In response, here's a tiny alternative with just a few essential functions.  And for convenience, they have the same function signatures as `moment.js`!
 
-Minimalist Features:
+## Minimalist Features:
 * Only ~1.5kb gzipped
 * time formatter (e.g. convert 'ddd MMM Do YYYY HH:mm:ss' to 'Fri Aug 5th 2016 16:23:45pm')
-* get the relative time from now (e.g. '10 hours ago')
-* get the relative time between any two times
+* relative time from now (e.g. '10 hours ago')
+* relative time between any two times
 * UTC support
 
 ## Installation

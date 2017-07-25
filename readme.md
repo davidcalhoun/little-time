@@ -117,6 +117,6 @@ littleTime.utc('2016-08-29 12:00:00-07:00').fromNow();
 ## License
 MIT
 
-[downloads-image]: https://img.shields.io/npm/dt/little-time.svg
+[downloads-image]: https://img.shields.io/npm/dm/little-time.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/little-time
 [npm-image]: https://img.shields.io/npm/v/little-time.svg

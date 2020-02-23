@@ -25,9 +25,13 @@
   "dependencies": {},
   "devDependencies": {
     "mocha": "*",
-    "uglify-js": "^2.7.0"
+    "uglify-js": "^3.8.0"
   },
   "scripts": {
+    "patch": "npm version patch && npm run npm-publish",
+    "minor": "npm version minor && npm run npm-publish",
+    "major": "npm version major && npm run npm-publish",
+    "npm-publish": "npm publish && git push && git push --tags",
     "test": "./node_modules/mocha/bin/mocha --check-leaks --use_strict",
     "minify": "./node_modules/uglify-js/bin/uglifyjs -nmf --mangle-props --mangle-regex=\"/^_/\" -o little-time-min.js little-time.js"
   },

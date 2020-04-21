@@ -33,7 +33,8 @@
     "major": "npm version major && npm run npm-publish",
     "npm-publish": "npm publish && git push && git push --tags",
     "test": "./node_modules/mocha/bin/mocha --check-leaks --use_strict",
-    "minify": "./node_modules/uglify-js/bin/uglifyjs -nmf --mangle-props --mangle-regex=\"/^_/\" -o little-time-min.js little-time.js"
+    "minify": "./node_modules/uglify-js/bin/uglifyjs -nmf --mangle-props --mangle-regex=\"/^_/\" -o little-time-min.js little-time.js",
+    "bump": "! npm outdated && npm update && npm audit fix || echo 'Package up to date'"
   },
   "engines": {
     "node": ">=0.10.25"

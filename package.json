@@ -25,7 +25,7 @@
   "dependencies": {},
   "devDependencies": {
     "mocha": "^7.1.2",
-    "uglify-js": "^3.9.1"
+    "uglify-js": "^3.9.3"
   },
   "scripts": {
     "patch": "npm version patch && npm run npm-publish",
